@@ -7,5 +7,13 @@
   "Relabel": "Re-etiquetar",
   "Targets": "Objetivos",
   "Export": "Exportar",
-  "Create Report": "Crear reporte"
+  "Create Report": "Crear reporte",
+  "Measurements": "Medidas",
+  "No tracked measurements": "No hay mediciones encontradas",
+  "Download CSV": "Descargar CSV",
+  "No, do not ask again": "No, no volver a preguntar",
+  "Track measurements for this series?": "¿Seguimiento de las medidas de esta serie?",
+  "Non-tracked": "Sin seguimiento",
+  "(empty)": "(vacío)",
+  "Export CSV": "Exportar CSV"
 }

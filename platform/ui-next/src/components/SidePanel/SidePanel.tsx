@@ -17,12 +17,13 @@ type StyleMap = {
 };
 const borderSize = 4;
 const collapsedWidth = 25;
+const collapsedWidthMobile = 0;
 const closeIconWidth = 30;
 const gridHorizontalPadding = 10;
 const tabSpacerWidth = 2;
 
 const baseClasses =
-  'transition-all duration-300 ease-in-out bg-black border-black justify-start box-content flex flex-col';
+  'transition-all duration-300 ease-in-out bg-black border-secondary-main box-content';
 
 const classesMap = {
   open: {
@@ -31,7 +32,7 @@ const classesMap = {
   },
   closed: {
     left: `mr-2 items-end`,
-    right: `ml-2 items-start`,
+    right: `ml-2 items-start border-l rounded-md pl-1`,
   },
 };
 
@@ -143,6 +144,18 @@ const createBaseStyle = (expandedWidth: number) => {
     height: '99.8%',
   };
 };
+
+//Responsive Base style
+const createMobileBaseStyle = (expandedHeight: number) => {
+  return {
+    maxHeight: `${expandedHeight}px`,
+    height: `${expandedHeight}px`,
+    position: 'relative',
+    top: '0.2%',
+    width: '99.8%',
+  };
+};
+
 const SidePanel = ({
   side,
   className,
@@ -150,14 +163,24 @@ const SidePanel = ({
   tabs,
   onOpen,
   onClose,
-  expandedWidth = 280,
+  expandedWidth: expandedWidthP = 248,
   onActiveTabIndexChange,
+  isMobile = false,
 }) => {
+  const isLeftMobilePanel = isMobile && side === 'left';
+  const isRightMobilePanel = isMobile && side === 'right';
   const [panelOpen, setPanelOpen] = useState(activeTabIndexProp !== null);
   const [activeTabIndex, setActiveTabIndex] = useState(0);
 
-  const styleMap = createStyleMap(expandedWidth, borderSize, collapsedWidth);
-  const baseStyle = createBaseStyle(expandedWidth);
+  const expandedWidth = isRightMobilePanel ? 200 : expandedWidthP;
+  const styleMap = createStyleMap(
+    expandedWidth,
+    isRightMobilePanel ? 0 : borderSize,
+    isRightMobilePanel ? collapsedWidthMobile : collapsedWidth
+  );
+  const baseStyle = isLeftMobilePanel
+    ? createMobileBaseStyle(expandedWidth)
+    : createBaseStyle(expandedWidth);
   const gridAvailableWidth = expandedWidth - closeIconWidth - gridHorizontalPadding;
   const gridWidth = getGridWidth(tabs.length, gridAvailableWidth);
   const openStatus = panelOpen ? 'open' : 'closed';
@@ -202,8 +225,11 @@ const SidePanel = ({
       <>
         <div
           className={classnames(
-            'bg-secondary-dark flex h-[28px] w-full cursor-pointer items-center rounded-md',
-            side === 'left' ? 'justify-end pr-2' : 'justify-start pl-2'
+            'flex h-[28px] cursor-pointer items-center',
+            side === 'left' ? 'w-full justify-end pr-2' : 'w-full justify-start pl-2',
+            isRightMobilePanel
+              ? 'border-y-secondary-main border-l-secondary-main fixed bottom-[223px] right-0 z-10 mr-1 w-8 rounded-l-md border border-r-black bg-black'
+              : 'bg-secondary-dark rounded-md'
           )}
           onClick={() => {
             updatePanelOpen(!panelOpen);
@@ -280,8 +306,10 @@ const SidePanel = ({
 
     return (
       <>
-        {getCloseIcon()}
-        <div className={classnames('flex grow justify-center')}>
+        {isLeftMobilePanel ? null : getCloseIcon()}
+        <div
+          className={classnames('flex grow', side === 'right' ? 'justify-start' : 'justify-end')}
+        >
           <div className={classnames('bg-primary-dark text-primary-active flex flex-wrap')}>
             {tabs.map((tab, tabIndex) => {
               const { disabled } = tab;
@@ -309,7 +337,9 @@ const SidePanel = ({
                         )}
                         style={getTabStyle(tabs.length)}
                         onClick={() => {
-                          return disabled ? null : updateActiveTabIndex(tabIndex);
+                          return disabled || isLeftMobilePanel
+                            ? null
+                            : updateActiveTabIndex(tabIndex);
                         }}
                         data-cy={`${tab.name}-btn`}
                       >
@@ -349,7 +379,7 @@ const SidePanel = ({
           'text-primary-active flex grow cursor-pointer select-none justify-center self-center text-[13px]'
         )}
         data-cy={`${tabs[0].name}-btn`}
-        onClick={() => updatePanelOpen(!panelOpen)}
+        onClick={() => (isLeftMobilePanel ? {} : updatePanelOpen(!panelOpen))}
       >
         {getCloseIcon()}
         <span>{tabs[0].label}</span>
@@ -360,7 +390,12 @@ const SidePanel = ({
   const getOpenStateComponent = () => {
     return (
       <>
-        <div className="bg-bkg-med flex h-[40px] flex-shrink-0 select-none rounded-t p-2">
+        <div
+          className={classnames(
+            'bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]',
+            !isMobile && 'h-[40px]'
+          )}
+        >
           {tabs.length === 1 ? getOneTabComponent() : getTabGridComponent()}
         </div>
         <Separator
@@ -374,7 +409,14 @@ const SidePanel = ({
 
   return (
     <div
-      className={classnames(className, baseClasses, classesMap[openStatus][side])}
+      className={classnames(
+        className,
+        baseClasses,
+        isLeftMobilePanel
+          ? 'mb-1 flex flex-col justify-start gap-1'
+          : 'flex flex-col justify-start',
+        classesMap[openStatus][side]
+      )}
       style={style}
     >
       {panelOpen ? (

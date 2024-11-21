@@ -20,6 +20,7 @@ const StudyItem = ({
   onClickUntrack,
   viewPreset = 'thumbnails',
   onThumbnailContextMenu,
+  isMobile = false,
 }: withAppTypes) => {
   return (
     <Accordion
@@ -32,16 +33,21 @@ const StudyItem = ({
       defaultValue={isActive ? 'study-item' : undefined}
     >
       <AccordionItem value="study-item">
-        <AccordionTrigger className={classnames('hover:bg-accent bg-popover rounded')}>
+        <AccordionTrigger
+          className={classnames(
+            'hover:bg-secondary-active bg-secondary-dark rounded',
+            isMobile && 'hidden'
+          )}
+        >
           <div className="flex h-[40px] flex-1 flex-row">
             <div className="flex w-full flex-row items-center justify-between">
               <div className="flex flex-col items-start text-[13px]">
                 <div className="text-white">{date}</div>
-                <div className="text-muted-foreground h-[18px] max-w-[160px] overflow-hidden truncate whitespace-nowrap">
+                <div className="text-primary-light h-[18px] max-w-[160px] overflow-hidden truncate whitespace-nowrap">
                   {description}
                 </div>
               </div>
-              <div className="text-muted-foreground mr-2 flex flex-col items-end text-[12px]">
+              <div className="text-primary-light/80 mr-2 flex flex-col items-end text-[12px]">
                 <div className="max-w-[150px] overflow-hidden text-ellipsis">{modalities}</div>
                 <div>{numInstances}</div>
               </div>
@@ -62,6 +68,7 @@ const StudyItem = ({
               onClickUntrack={onClickUntrack}
               viewPreset={viewPreset}
               onThumbnailContextMenu={onThumbnailContextMenu}
+              isMobile={isMobile}
             />
           )}
         </AccordionContent>
@@ -85,6 +92,7 @@ StudyItem.propTypes = {
   onDoubleClickThumbnail: PropTypes.func,
   onClickUntrack: PropTypes.func,
   viewPreset: PropTypes.string,
+  isMobile: PropTypes.bool,
 };
 
 export { StudyItem };

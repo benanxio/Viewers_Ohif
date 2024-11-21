@@ -481,7 +481,7 @@ function PanelStudyBrowserTracking({
 
   return (
     <>
-      <>
+      {/* <>
         <PanelStudyBrowserHeader
           viewPresets={viewPresets}
           updateViewPresetValue={updateViewPresetValue}
@@ -493,7 +493,7 @@ function PanelStudyBrowserTracking({
           className="bg-black"
           thickness="2px"
         />
-      </>
+      </> */}
 
       <StudyBrowser
         tabs={tabs}

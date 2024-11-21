@@ -3,7 +3,7 @@ import PropTypes from 'prop-types';
 
 import { LoadingIndicatorProgress, InvestigationalUseDialog } from '@ohif/ui';
 import { HangingProtocolService, CommandsManager } from '@ohif/core';
-import { useAppConfig } from '@state';
+import { useAppConfig, useCustomContext } from '@state';
 import ViewerHeader from './ViewerHeader';
 import SidePanelWithServices from '../Components/SidePanelWithServices';
 import { Onboarding } from '@ohif/ui-next';
@@ -21,7 +21,7 @@ function ViewerLayout({
   rightPanelClosed = false,
 }: withAppTypes): React.FunctionComponent {
   const [appConfig] = useAppConfig();
-
+  const { isMobile } = useCustomContext();
   const { panelService, hangingProtocolService } = servicesManager.services;
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
 
@@ -116,23 +116,25 @@ function ViewerLayout({
         extensionManager={extensionManager}
         servicesManager={servicesManager}
         appConfig={appConfig}
+        isMobile={isMobile}
       />
       <div
         className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
-        style={{ height: 'calc(100vh - 52px' }}
+        style={{ height: 'calc(100vh - 84px' }}
       >
         <React.Fragment>
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}
           {/* LEFT SIDEPANELS */}
-          {hasLeftPanels ? (
+          {hasLeftPanels && !isMobile ? (
             <SidePanelWithServices
               side="left"
               activeTabIndex={leftPanelClosedState ? null : 0}
               servicesManager={servicesManager}
+              isMobile={isMobile}
             />
           ) : null}
           {/* TOOLBAR + GRID */}
-          <div className="flex h-full flex-1 flex-col">
+          <div className="flex h-full flex-1 flex-col overflow-hidden">
             <div className="relative flex h-full flex-1 items-center justify-center overflow-hidden bg-black">
               <ViewportGridComp
                 servicesManager={servicesManager}
@@ -140,12 +142,21 @@ function ViewerLayout({
                 commandsManager={commandsManager}
               />
             </div>
+            {hasLeftPanels && isMobile ? (
+              <SidePanelWithServices
+                side="left"
+                activeTabIndex={leftPanelClosedState ? null : 0}
+                servicesManager={servicesManager}
+                isMobile={isMobile}
+              />
+            ) : null}
           </div>
           {hasRightPanels ? (
             <SidePanelWithServices
               side="right"
               activeTabIndex={rightPanelClosedState ? null : 0}
               servicesManager={servicesManager}
+              isMobile={isMobile}
             />
           ) : null}
         </React.Fragment>

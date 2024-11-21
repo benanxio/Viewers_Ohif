@@ -91,6 +91,7 @@ export {
   StudyBrowser,
   StudyItem,
   StudyListExpandedRow,
+  ShareStudyForm,
   StudyListFilter,
   StudyListPagination,
   StudyListTable,
@@ -119,6 +120,7 @@ export {
   ViewportActionCorners,
   ViewportActionCornersLocations,
   ViewportDownloadForm,
+  ViewportPrintForm,
   ViewportGrid,
   ViewportPane,
   WindowLevel,
@@ -133,6 +135,7 @@ export {
   InvestigationalUseDialog,
   LayoutPreset,
   StudyBrowserSort,
+  usePatientInfo,
 } from './components';
 
 export { useSessionStorage } from './hooks';

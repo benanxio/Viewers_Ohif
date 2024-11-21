@@ -29,23 +29,24 @@ module.exports = {
       },
 
       primary: {
-        light: '#5acce6',
-        main: '#0944b3',
-        dark: '#090c29',
-        active: '#348cfd',
-      },
-      inputfield: {
-        main: '#3a3f99',
-        disabled: '#2b166b',
-        focus: '#5acce6',
-        placeholder: '#39383f',
+        light: '#e5613e', //Colores del hover de los iconos
+        main: '#e5613e',
+        dark: '#e5613e',
+        active: '#ffff', //Asignado a los iconos desplegables
       },
 
       secondary: {
-        light: '#3a3f99',
-        main: '#2b166b',
-        dark: '#041c4a',
+        light: '#e5613e',
+        main: '#e5613e',
+        dark: '#3b3a3a',
         active: '#1f1f27',
+      },
+
+      inputfield: {
+        main: '#e1e1e1',
+        disabled: '#a19fad',
+        focus: '#e5613e',
+        placeholder: '#39383f',
       },
 
       indigo: {

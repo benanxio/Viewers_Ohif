@@ -18,6 +18,7 @@ function ViewerHeader({
   extensionManager,
   servicesManager,
   appConfig,
+  isMobile = false,
 }: withAppTypes<{ appConfig: AppTypes.Config }>) {
   const navigate = useNavigate();
   const location = useLocation();
@@ -127,6 +128,7 @@ function ViewerHeader({
           />
         )
       }
+      isMobile={isMobile as boolean}
     >
       <div className="relative flex justify-center gap-[4px]">
         <Toolbar servicesManager={servicesManager} />

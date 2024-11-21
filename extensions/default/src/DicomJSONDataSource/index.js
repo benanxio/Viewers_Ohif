@@ -4,6 +4,7 @@ import qs from 'query-string';
 
 import getImageId from '../DicomWebDataSource/utils/getImageId';
 import getDirectURL from '../utils/getDirectURL';
+import getUrlParams from '../utils/getUrlParams';
 
 const metadataProvider = OHIF.classes.MetadataProvider;
 
@@ -24,6 +25,11 @@ let _store = {
   //   studies: [Study1],
   // }
   // }
+};
+
+const parseURL = () => {
+  const { client, sede, date, id } = getUrlParams(true);
+  return `${process.env.BUCKET_URL}/${client}/${sede}/${date}/${id}/${id}.json`;
 };
 
 function wrapSequences(obj) {
@@ -63,7 +69,8 @@ function createDicomJSONApi(dicomJsonConfig) {
   const implementation = {
     initialize: async ({ query, url }) => {
       if (!url) {
-        url = query.get('url');
+        // url = query.get('url');
+        url = parseURL();
       }
       let metaData = getMetaDataByURL(url);
 
@@ -76,7 +83,7 @@ function createDicomJSONApi(dicomJsonConfig) {
         });
       }
 
-      const response = await fetch(url);
+      const response = await fetch(url, { method: 'GET', cache: 'reload' });
       const data = await response.json();
 
       let StudyInstanceUID;
@@ -294,7 +301,8 @@ function createDicomJSONApi(dicomJsonConfig) {
       return imageIds;
     },
     getStudyInstanceUIDs: ({ params, query }) => {
-      const url = query.get('url');
+      // const url = query.get('url');
+      const url = parseURL();
       return _store.studyInstanceUIDMap.get(url);
     },
   };

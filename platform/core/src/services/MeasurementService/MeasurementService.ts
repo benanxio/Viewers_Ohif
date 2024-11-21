@@ -346,6 +346,7 @@ class MeasurementService extends PubSubService {
   }
 
   update(measurementUID: string, measurement, notYetUpdatedAtSource = false) {
+    console.log('update', measurementUID, measurement);
     if (!this.measurements.has(measurementUID)) {
       return;
     }

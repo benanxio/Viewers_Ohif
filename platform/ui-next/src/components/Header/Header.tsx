@@ -29,6 +29,7 @@ interface HeaderProps {
   };
   PatientInfo?: ReactNode;
   Secondary?: ReactNode;
+  isMobile?: boolean;
 }
 
 function Header({
@@ -55,7 +56,7 @@ function Header({
       isSticky={isSticky}
       {...props}
     >
-      <div className="relative h-[48px] items-center">
+      <div className="relative h-[80px] items-center">
         <div className="absolute left-0 top-1/2 flex -translate-y-1/2 items-center">
           <div
             className={classNames(
@@ -66,8 +67,10 @@ function Header({
             data-cy="return-to-work-list"
           >
             {isReturnEnabled && <Icons.ChevronPatient className="text-primary-active w-8" />}
-            <div className="ml-1">
-              {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Icons.OHIFLogo />}
+            <div className={classNames('ml-1', props.isMobile && 'hidden')}>
+              {WhiteLabeling?.createLogoComponentFn?.(React, props) || (
+                <Icons.XpectriaLogo className="h-10 w-auto" />
+              )}
             </div>
           </div>
         </div>

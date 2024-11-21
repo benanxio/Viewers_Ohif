@@ -12,6 +12,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '../DropdownMenu';
+import classNames from 'classnames';
 
 /**
  * Display a thumbnail for a display set.
@@ -40,6 +41,7 @@ const Thumbnail = ({
   thumbnailType = 'thumbnail',
   onClickUntrack = () => {},
   onThumbnailContextMenu,
+  isMobile = false,
 }: withAppTypes): React.ReactNode => {
   // TODO: We should wrap our thumbnail to create a "DraggableThumbnail", as
   // this will still allow for "drag", even if there is no drop target for the
@@ -69,37 +71,49 @@ const Thumbnail = ({
     return (
       <div
         className={classnames(
-          'flex h-full w-full flex-col items-center justify-center gap-[2px] p-[4px]',
-          isActive && 'bg-popover'
+          'flex h-full w-full flex-col items-center justify-center',
+          isMobile ? 'gap-[2px] p-[4px]' : 'gap-4 p-4'
         )}
       >
-        <div className="h-[114px] w-[128px]">
+        <div className={classNames(isMobile ? 'h-[114px] w-[128px]' : 'h-[126px] w-[186px]')}>
           <div className="relative">
             {imageSrc ? (
               <img
                 src={imageSrc}
                 alt={imageAltText}
-                className="h-[114px] w-[128px] rounded"
+                className={classNames(
+                  'border-primary-light rounded bg-black object-contain',
+                  isMobile ? 'h-[114px] w-[128px]' : 'h-[126px] w-[186px]',
+                  isActive
+                    ? 'border-2'
+                    : 'group-hover:border-primary-active border group-hover:border-2'
+                )}
                 crossOrigin="anonymous"
               />
             ) : (
-              <div className="bg-background h-[114px] w-[128px] rounded"></div>
+                <div
+                  className={classNames(
+                    'border-primary-light rounded border bg-black',
+                    isMobile ? 'h-[114px] w-[128px]' : 'h-[126px] w-[186px]'
+                  )}
+                ></div>
             )}
 
             {/* bottom left */}
-            <div className="absolute bottom-0 left-0 flex h-[14px] items-center gap-[4px] rounded-tr pt-[10px] pb-[8px] pr-[6px] pl-[3px]">
+            <div className="absolute bottom-1 left-1 flex h-[14px] items-center gap-[4px] rounded-tr pt-[10px] pb-[8px] pr-[6px] pl-[3px]">
               <div
                 className={classnames(
                   'h-[10px] w-[10px] rounded-[2px]',
-                  isActive || isHydratedForDerivedDisplaySet ? 'bg-highlight' : 'bg-primary/65',
+                  isActive || isHydratedForDerivedDisplaySet
+                    ? 'bg-primary-light'
+                    : 'bg-primary-light/65',
                   loadingProgress && loadingProgress < 1 && 'bg-primary/25'
                 )}
               ></div>
               <div className="text-[11px] font-semibold text-white">{modality}</div>
             </div>
-
             {/* top right */}
-            <div className="absolute top-0 right-0 flex items-center gap-[4px]">
+            <div className="absolute top-0 right-0 hidden items-center gap-[4px]">
               <DisplaySetMessageListTooltip
                 messages={messages}
                 id={`display-set-tooltip-${displaySetInstanceUID}`}
@@ -133,7 +147,7 @@ const Thumbnail = ({
               )}
             </div>
             {/* bottom right */}
-            <div className="absolute bottom-0 right-0 flex items-center gap-[4px] p-[4px]">
+            <div className="absolute bottom-0 right-0 hidden items-center gap-[4px] p-[4px]">
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -202,7 +216,7 @@ const Thumbnail = ({
       <div
         className={classnames(
           'flex h-full w-full items-center justify-between pr-[8px] pl-[8px] pt-[4px] pb-[4px]',
-          isActive && 'bg-popover'
+          isActive && 'bg-secondary-active'
         )}
       >
         <div className="relative flex h-[32px] items-center gap-[8px]">
@@ -315,8 +329,8 @@ const Thumbnail = ({
     <div
       className={classnames(
         className,
-        'bg-muted hover:bg-primary/30 group flex cursor-pointer select-none flex-col rounded outline-none',
-        viewPreset === 'thumbnails' && 'h-[170px] w-[135px]',
+        'group flex cursor-pointer select-none rounded bg-black outline-none',
+        viewPreset === 'thumbnails' && isMobile ? 'h-[170px] w-[135px]' : 'h-[200px] w-full',
         viewPreset === 'list' && 'col-span-2 h-[40px] w-[275px]'
       )}
       id={`thumbnail-${displaySetInstanceUID}`}

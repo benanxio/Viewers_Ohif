@@ -1,0 +1,21 @@
+{
+  "Active viewport has no displayed image": "La ventana activa no tiene imagen mostrada",
+  "Cancel": "Cancelar",
+  "Download": "Descargar",
+  "The file name cannot be empty.": "El nombre del archivo no puede estar vacío",
+  "File Type": "Tipo de archivo",
+  "File Name": "Nombre del archivo",
+  "formTitle": "Por favor, especifica las dimensiones, el nombre del archivo y el tipo deseado para la imagen de salida.",
+  "Image height (px)": "Altura de la imagen (px)",
+  "Image Preview": "Vista previa",
+  "Image preview": "Vista previa",
+  "Image width (px)": "Ancho de la imagen (px)",
+  "keepAspectRatio": "Mantener la proporción",
+  "loadingPreview": "Cargando vista previa de la imagen...",
+  "The minimum valid height is 100px.": "La altura mínima válida es de 100px",
+  "The minimum valid width is 100px.": "El ancho mínimo válido es de 100px",
+  "Show Annotations": "Mostrar anotaciones",
+  "Please specify the dimensions, filename, and desired type for the output image.": "Por favor, especifica las dimensiones, el nombre del archivo y el tipo deseado para la imagen de salida.",
+  "Image cannot be downloaded": "La imagen no se puede descargar",
+  "Download High Quality Image": "Descargar imagen en alta calidad"
+}

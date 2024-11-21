@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 import { Thumbnail } from '../Thumbnail';
+import classNames from 'classnames';
 
 const ThumbnailList = ({
   thumbnails,
@@ -11,17 +12,31 @@ const ThumbnailList = ({
   activeDisplaySetInstanceUIDs = [],
   viewPreset,
   onThumbnailContextMenu,
+  isMobile = false,
 }: withAppTypes) => {
   return (
     <div
-      className="min-h-[350px]"
-      style={{
-        '--radix-accordion-content-height': '350px',
-      }}
+      className={classNames(!isMobile && 'min-h-[350px]')}
+      style={
+        !isMobile
+          ? {
+            '--radix-accordion-content-height': '350px',
+          }
+          : {}
+      }
     >
       <div
         id="ohif-thumbnail-list"
-        className={`ohif-scrollbar bg-bkg-low grid place-items-center overflow-y-hidden pt-[4px] pr-[2.5px] pl-[2.5px] ${viewPreset === 'thumbnails' ? 'grid-cols-2 gap-[4px] pb-[12px]' : 'grid-cols-1 gap-[2px]'}`}
+        // className={`ohif-scrollbar bg-bkg-low grid place-items-center overflow-y-hidden pt-[4px] pr-[2.5px] pl-[2.5px] ${viewPreset === 'thumbnails' ? 'grid-cols-2 gap-[4px] pb-[12px]' : 'grid-cols-1 gap-[2px]'}`}
+        className={classNames(
+          isMobile
+            ? 'flex flex-1 flex-row items-center justify-start gap-[4px] overflow-x-auto overflow-y-hidden p-1'
+            : classNames(
+              'ohif-scrollbar grid grid-cols-1 place-items-center overflow-y-hidden bg-black pt-[4px] pr-[2.5px] pl-[2.5px]',
+              viewPreset === 'thumbnails' ? 'pb-[12px]' : 'gap-[2px]'
+            ),
+          'bg-black'
+        )}
       >
         {thumbnails.map(
           ({
@@ -68,6 +83,7 @@ const ThumbnailList = ({
                 canReject={canReject}
                 onReject={onReject}
                 onThumbnailContextMenu={onThumbnailContextMenu}
+                isMobile={isMobile}
               />
             );
           }

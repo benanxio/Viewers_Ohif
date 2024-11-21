@@ -31,6 +31,7 @@ import ProgressDropdown from './ProgressDropdown';
 import Select from './Select';
 import SegmentationTable from './SegmentationTable';
 import { SegmentationGroupTable, SegmentationGroupTableExpanded } from './SegmentationGroupTable';
+import ShareStudyForm from './ShareStudyForm';
 import SidePanel from './SidePanel';
 import SplitButton from './SplitButton';
 import StudyBrowser from './StudyBrowser';
@@ -60,6 +61,7 @@ import TooltipClipboard from './TooltipClipboard';
 import Typography from './Typography';
 import Viewport from './Viewport';
 import ViewportDownloadForm from './ViewportDownloadForm';
+import ViewportPrintForm from './ViewportPrintForm';
 import ViewportGrid from './ViewportGrid';
 import ViewportPane from './ViewportPane';
 import WindowLevel from './WindowLevel';
@@ -87,7 +89,7 @@ import LabellingFlow from './Labelling';
 import SwitchButton, { SwitchLabelLocation } from './SwitchButton';
 import * as AllInOneMenu from './AllInOneMenu';
 import ViewportActionArrows from './ViewportActionArrows';
-import HeaderPatientInfo from './HeaderPatientInfo';
+import HeaderPatientInfo, { usePatientInfo } from './HeaderPatientInfo';
 import LegacySplitButton from './LegacySplitButton';
 import { ToolSettings } from './AdvancedToolbox';
 import { Toolbox } from './Toolbox';
@@ -152,6 +154,7 @@ export {
   SegmentationTable,
   SegmentationGroupTable,
   SegmentationGroupTableExpanded,
+  ShareStudyForm,
   SidePanel,
   SplitButton,
   StudyBrowser,
@@ -180,11 +183,13 @@ export {
   TooltipClipboard,
   Typography,
   Viewport,
+  usePatientInfo,
   ViewportActionArrows,
   ViewportActionBar,
   ViewportActionCorners,
   ViewportActionCornersLocations,
   ViewportDownloadForm,
+  ViewportPrintForm,
   ViewportGrid,
   ViewportPane,
   ViewportOverlay,
