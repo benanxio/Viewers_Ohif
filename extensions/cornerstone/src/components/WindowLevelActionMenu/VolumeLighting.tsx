@@ -1,11 +1,13 @@
 import React, { ReactElement, useState, useEffect, useCallback } from 'react';
 import { VolumeLightingProps } from '../../types/ViewportPresets';
+import { useTranslation } from 'react-i18next';
 
 export function VolumeLighting({
   servicesManager,
   commandsManager,
   viewportId,
 }: VolumeLightingProps): ReactElement {
+  const { t } = useTranslation('VolumeRenderingOptions');
   const { cornerstoneViewportService } = servicesManager.services;
   const [ambient, setAmbient] = useState(null);
   const [diffuse, setDiffuse] = useState(null);
@@ -40,12 +42,12 @@ export function VolumeLighting({
   }, [viewportId, cornerstoneViewportService]);
   return (
     <>
-      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
+      <div className="all-in-one-menu-item flex w-full flex-row !items-center justify-between gap-[10px]">
         <label
-          className="block  text-white"
+          className="block text-white"
           htmlFor="ambient"
         >
-          Ambient
+          {t('Ambient')}
         </label>
         {ambient !== null && (
           <input
@@ -68,12 +70,12 @@ export function VolumeLighting({
           />
         )}
       </div>
-      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
+      <div className="all-in-one-menu-item flex w-full flex-row !items-center justify-between gap-[10px]">
         <label
-          className="block  text-white"
+          className="block text-white"
           htmlFor="diffuse"
         >
-          Diffuse
+          {t('Diffuse')}
         </label>
         {diffuse !== null && (
           <input
@@ -97,12 +99,12 @@ export function VolumeLighting({
         )}
       </div>
 
-      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
+      <div className="all-in-one-menu-item flex w-full flex-row !items-center justify-between gap-[10px]">
         <label
-          className="block  text-white"
+          className="block text-white"
           htmlFor="specular"
         >
-          Specular
+          {t('Specular')}
         </label>
         {specular !== null && (
           <input

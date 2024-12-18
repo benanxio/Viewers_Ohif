@@ -1,16 +1,22 @@
 import { useState, useEffect } from 'react';
-import { utils } from '@ohif/core';
+import { utils, Types } from '@ohif/core';
+import { useTranslation } from 'react-i18next';
 
-const { formatPN, formatDate } = utils;
+const { formatPN, formatDate, formatTime, formatPatientAge } = utils;
 
-function usePatientInfo(servicesManager: AppTypes.ServicesManager) {
+export default function usePatientInfo(servicesManager: AppTypes.ServicesManager): {
+  patientInfo: Types.PatientInfo;
+  isMixedPatients: boolean;
+} {
   const { displaySetService } = servicesManager.services;
-
+  const { t } = useTranslation('PatientInfo');
   const [patientInfo, setPatientInfo] = useState({
     PatientName: '',
     PatientID: '',
     PatientSex: '',
     PatientDOB: '',
+    StudyDescription: '',
+    StudyCapture: '',
   });
   const [isMixedPatients, setIsMixedPatients] = useState(false);
   const displaySets = displaySetService.getActiveDisplaySets();
@@ -33,16 +39,37 @@ function usePatientInfo(servicesManager: AppTypes.ServicesManager) {
   const updatePatientInfo = () => {
     const displaySet = displaySets[0];
     const instance = displaySet?.instances?.[0] || displaySet?.instance;
+
     if (!instance) {
       return;
     }
+
+    const { StudyDate: studyDate, StudyTime: studyTime, PatientAge } = instance;
+    const AGE =
+      formatPatientAge(PatientAge) || formatDate(instance.PatientBirthDate) || t('unknown');
+    const dateFormatted = formatDate(studyDate);
+    const hourFormatted = formatTime(studyTime);
+    const patientSex = instance.PatientSex
+      ? instance.PatientSex === 'F'
+        ? t('Female')
+        : t('Male')
+      : '-';
+
     setPatientInfo({
-      PatientID: instance.PatientID || null,
-      PatientName: instance.PatientName ? formatPN(instance.PatientName.Alphabetic) : null,
-      PatientSex: instance.PatientSex || null,
-      PatientDOB: formatDate(instance.PatientBirthDate) || null,
+      PatientID: instance.PatientID || '',
+      PatientName:
+        instance.PatientName?.length > 0
+          ? formatPN(instance.PatientName[0]?.Alphabetic || t('Unknown'))
+          : t('Unknown'),
+      PatientSex: patientSex,
+      PatientDOB: AGE,
+      StudyCapture:
+        dateFormatted === 'Invalid date' || hourFormatted === 'Invalid date'
+          ? '-'
+          : `${dateFormatted}, ${hourFormatted}h`,
+      StudyDescription: instance.StudyDescription,
     });
-    checkMixedPatients(instance.PatientID || null);
+    checkMixedPatients(instance.PatientID || '');
   };
 
   useEffect(() => {
@@ -59,5 +86,3 @@ function usePatientInfo(servicesManager: AppTypes.ServicesManager) {
 
   return { patientInfo, isMixedPatients };
 }
-
-export default usePatientInfo;

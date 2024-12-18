@@ -3,9 +3,10 @@ import PropTypes from 'prop-types';
 import ReactModal from 'react-modal';
 import Draggable from 'react-draggable';
 import { useModal } from '../../contextProviders';
-
+import { useTranslation } from 'react-i18next';
 import Icon from '../Icon';
 import Typography from '../Typography';
+import classNames from 'classnames';
 
 import './Modal.css';
 
@@ -26,21 +27,21 @@ const Modal = ({
   contentDimensions = null,
 }) => {
   const { hide } = useModal();
-
+  const { t } = useTranslation('Modals');
   const handleClose = () => {
     hide();
   };
 
   const renderHeader = () =>
     title && (
-      <header className="bg-primary-dark drag-handle flex items-center rounded-tl rounded-tr px-[20px] py-[13px]">
+      <header className="bg-secondary-dark drag-handle flex items-center rounded-tl rounded-tr px-[20px] py-[13px]">
         <Typography
           variant="h6"
-          color="primaryLight"
+          color="primary"
           className="flex grow !leading-[1.2]"
           data-cy="modal-header"
         >
-          {title}
+          {t(title)}
         </Typography>
         {closeButton && (
           <Icon
@@ -58,8 +59,8 @@ const Modal = ({
       <section
         className={
           contentDimensions
-            ? `ohif-scrollbar bg-primary-dark overflow-y-auto ${contentDimensions}`
-            : 'ohif-scrollbar modal-content bg-primary-dark overflow-y-auto rounded-bl rounded-br px-[20px] pt-2 pb-[20px]'
+            ? `ohif-scrollbar bg-overlay overflow-y-auto ${contentDimensions}`
+            : 'ohif-scrollbar modal-content bg-overlay overflow-y-auto rounded-bl rounded-br px-[20px] pt-2 pb-[20px]'
         }
       >
         {children}
@@ -69,11 +70,12 @@ const Modal = ({
 
   return (
     <ReactModal
-      className={
+      className={classNames(
         containerDimensions
           ? `relative text-white outline-none ${containerDimensions}`
-          : 'relative max-h-full w-11/12 text-white outline-none lg:w-10/12 xl:w-9/12'
-      }
+          : 'relative max-h-full w-11/12 text-white outline-none lg:w-10/12 xl:w-9/12',
+        'border-secondary-dark/70 overflow-hidden rounded-md border'
+      )}
       overlayClassName={
         movable
           ? 'fixed top-0 left-0 right-0 bottom-0 z-50 flex items-center justify-center py-16 pointer-events-none'
@@ -82,7 +84,7 @@ const Modal = ({
       shouldCloseOnEsc={shouldCloseOnEsc}
       onRequestClose={handleClose}
       isOpen={isOpen}
-      title={title}
+      title={t(title)}
       shouldCloseOnOverlayClick={shouldCloseOnOverlayClick}
     >
       {movable ? (

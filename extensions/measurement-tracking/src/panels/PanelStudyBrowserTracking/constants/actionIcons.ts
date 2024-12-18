@@ -4,7 +4,7 @@ const defaultActionIcons = [
   {
     id: 'settings',
     iconName: 'Settings',
-    value: false,
+    value: true,
   },
 ] as actionIcon[];
 

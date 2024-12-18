@@ -29,6 +29,7 @@ interface HeaderProps {
   };
   PatientInfo?: ReactNode;
   Secondary?: ReactNode;
+  isMobile?: boolean;
 }
 
 function Header({
@@ -55,19 +56,18 @@ function Header({
       isSticky={isSticky}
       {...props}
     >
-      <div className="relative h-[48px] items-center">
+      <div className="relative h-[80px] items-center">
         <div className="absolute left-0 top-1/2 flex -translate-y-1/2 items-center">
           <div
-            className={classNames(
-              'mr-3 inline-flex items-center',
-              isReturnEnabled && 'cursor-pointer'
-            )}
+            className={classNames('inline-flex items-center', isReturnEnabled && 'cursor-pointer')}
             onClick={onClickReturn}
             data-cy="return-to-work-list"
           >
-            {isReturnEnabled && <Icons.ChevronPatient className="text-primary-active w-8" />}
-            <div className="ml-1">
-              {WhiteLabeling?.createLogoComponentFn?.(React, props) || <Icons.OHIFLogo />}
+            {/* {isReturnEnabled && <Icons.ChevronPatient className="text-primary-active w-8" />} */}
+            <div className={classNames('ml-6', props.isMobile && 'hidden')}>
+              {WhiteLabeling?.createLogoComponentFn?.(React, props) || (
+                <Icons.XpectriaLogo className="h-10 w-auto" />
+              )}
             </div>
           </div>
         </div>
@@ -77,8 +77,8 @@ function Header({
         </div>
         <div className="absolute right-0 top-1/2 flex -translate-y-1/2 select-none items-center">
           {PatientInfo}
-          <div className="border-primary-dark mx-1.5 h-[25px] border-r"></div>
-          <div className="flex-shrink-0">
+          <div className="border-primary-main mx-1.5 h-[25px] border-r"></div>
+          <div className="hidden flex-shrink-0">
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
                 <Button

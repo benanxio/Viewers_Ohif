@@ -21,3 +21,5 @@ export {
   UserAuthenticationProvider,
   useUserAuthentication,
 } from './UserAuthenticationProvider';
+
+export { XpectriaContext, XpectriaProvider, useXpectria } from './XpectriaProvider';

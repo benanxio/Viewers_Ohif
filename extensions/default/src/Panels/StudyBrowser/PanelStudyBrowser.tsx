@@ -285,7 +285,7 @@ function PanelStudyBrowser({
 
   return (
     <>
-      <>
+      {/* <>
         <PanelStudyBrowserHeader
           viewPresets={viewPresets}
           updateViewPresetValue={updateViewPresetValue}
@@ -297,7 +297,7 @@ function PanelStudyBrowser({
           className="bg-black"
           thickness="2px"
         />
-      </>
+      </> */}
 
       <StudyBrowser
         tabs={tabs}

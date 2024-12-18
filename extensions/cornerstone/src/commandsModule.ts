@@ -13,7 +13,8 @@ import {
   ReferenceLinesTool,
 } from '@cornerstonejs/tools';
 
-import { Types as OhifTypes } from '@ohif/core';
+import { Types as OhifTypes, utils } from '@ohif/core';
+import { ShareStudyForm } from '@ohif/ui';
 import {
   callLabelAutocompleteDialog,
   showLabelAnnotationPopup,
@@ -23,12 +24,15 @@ import {
 } from '@ohif/extension-default';
 import { vec3, mat4 } from 'gl-matrix';
 
+import CornerstoneViewportPrintForm from './utils/CornerstoneViewportPrintForm';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
+
+const { getUrlParams } = utils;
 
 const toggleSyncFunctions = {
   imageSlice: toggleImageSliceSync,
@@ -467,6 +471,76 @@ function commandsModule({
         });
       }
     },
+    //Custom toolbarbuttons
+    createReportTab: () => {
+      const { isAuthorized, id } = getUrlParams();
+      if (isAuthorized) {
+        window.open(`${process.env.FRONT_URL}/Report/${id}`);
+      }
+    },
+    showShareStudy: () => {
+      const { uiModalService } = servicesManager.services;
+
+      if (uiModalService) {
+        uiModalService.show({
+          content: ShareStudyForm,
+          title: 'Compartir estudio',
+          contentProps: {
+            onClose: uiModalService.hide,
+          },
+          containerDimensions: 'w-[70%] max-w-[900px]',
+        });
+      }
+    },
+    showPrintViewportModal: () => {
+      const { activeViewportId, viewports, layout } = viewportGridService.getState();
+
+      if (!cornerstoneViewportService.getCornerstoneViewport(activeViewportId)) {
+        // Cannot download a non-cornerstone viewport (image).
+        uiNotificationService.show({
+          title: 'Imprimir imagen',
+          message: 'La imagen no puede ser impresa',
+          type: 'error',
+        });
+        return;
+      }
+
+      const showPrintSuccess = text =>
+        uiNotificationService.show({
+          title: 'Impresion',
+          message: text,
+          type: 'info',
+          duration: 4000,
+        });
+
+      const showPrintError = text =>
+        uiNotificationService.show({
+          title: 'Impresion',
+          message: text,
+          type: 'error',
+          duration: 4000,
+        });
+
+      const { uiModalService, displaySetService } = servicesManager.services as OhifTypes.Services;
+
+      if (uiModalService) {
+        uiModalService.show({
+          content: CornerstoneViewportPrintForm,
+          title: 'Imprimir imagen de alta calidad',
+          contentProps: {
+            activeViewports: viewports,
+            layout,
+            onClose: uiModalService.hide,
+            cornerstoneViewportService,
+            displaySetService,
+            showPrintSuccess,
+            showPrintError,
+          },
+          containerDimensions: 'w-[70%] max-w-[900px]',
+        });
+      }
+    },
+    //End
     rotateViewport: ({ rotation }) => {
       const enabledElement = _getActiveViewportEnabledElement();
       if (!enabledElement) {
@@ -1328,6 +1402,17 @@ function commandsModule({
     showDownloadViewportModal: {
       commandFn: actions.showDownloadViewportModal,
     },
+    //Commands for Custom ToolbarButtons
+    showPrintViewportModal: {
+      commandFn: actions.showPrintViewportModal,
+    },
+    createReportTab: {
+      commandFn: actions.createReportTab,
+    },
+    showShareStudy: {
+      commandFn: actions.showShareStudy,
+    },
+    //End Commands for Custom ToolbarButtons
     toggleCine: {
       commandFn: actions.toggleCine,
     },

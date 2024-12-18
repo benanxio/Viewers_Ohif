@@ -3,7 +3,7 @@ import classnames from 'classnames';
 import PropTypes from 'prop-types';
 
 const flex = 'flex flex-row justify-between items-center';
-const theme = 'bg-indigo-dark text-white';
+const theme = 'bg-secondary-dark text-white';
 
 const ListMenu = ({ items = [], renderer, onClick = () => {} }) => {
   const [selectedIndex, setSelectedIndex] = useState(null);
@@ -31,7 +31,7 @@ const ListMenu = ({ items = [], renderer, onClick = () => {} }) => {
 
   return (
     <div
-      className="bg-secondary-dark flex flex-col gap-[4px] overflow-auto rounded-md p-1"
+      className="bg-secondary-dark border-secondary-light flex flex-col gap-[4px] overflow-auto rounded-md border p-1"
       style={{ maxHeight: 'calc(100vh - 5rem)' }}
     >
       {items.map((item, index) => {

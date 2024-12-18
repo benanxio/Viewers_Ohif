@@ -15,6 +15,7 @@ import isDicomUid from './isDicomUid';
 import formatDate from './formatDate';
 import formatTime from './formatTime';
 import formatPN from './formatPN';
+import formatPatientAge from './formatPatAge';
 import generateAcceptHeader from './generateAcceptHeader';
 import resolveObjectPath from './resolveObjectPath';
 import hierarchicalListUtils from './hierarchicalListUtils';
@@ -39,6 +40,7 @@ import {
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
+import getUrlParams from './getUrlParams';
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.
@@ -59,6 +61,7 @@ const utils = {
   formatDate,
   formatTime,
   formatPN,
+  formatPatientAge,
   b64toBlob,
   urlUtil,
   imageIdToURI,
@@ -84,6 +87,7 @@ const utils = {
   getSplitParam,
   generateAcceptHeader,
   createStudyBrowserTabs,
+  getUrlParams,
 };
 
 export {
@@ -117,6 +121,7 @@ export {
   getSplitParam,
   generateAcceptHeader,
   createStudyBrowserTabs,
+  getUrlParams,
 };
 
 export default utils;

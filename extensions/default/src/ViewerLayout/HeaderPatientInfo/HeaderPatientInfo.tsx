@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import usePatientInfo from '../../hooks/usePatientInfo';
-import { Icons } from '@ohif/ui-next';
+import { Icons, usePatientInfo } from '@ohif/ui-next';
+import classNames from 'classnames';
+import { useTranslation } from 'react-i18next';
 
 export enum PatientInfoVisibility {
   VISIBLE = 'visible',
@@ -16,10 +17,11 @@ const formatWithEllipsis = (str, maxLength) => {
   return str;
 };
 
-function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
+function HeaderPatientInfo({ servicesManager, appConfig, isMobile = false }: withAppTypes) {
   const initialExpandedState =
     appConfig.showPatientInfo === PatientInfoVisibility.VISIBLE ||
     appConfig.showPatientInfo === PatientInfoVisibility.VISIBLE_READONLY;
+  const { t } = useTranslation('PatientInfo');
   const [expanded, setExpanded] = useState(initialExpandedState);
   const { patientInfo, isMixedPatients } = usePatientInfo(servicesManager);
 
@@ -40,21 +42,36 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
 
   return (
     <div
-      className="hover:bg-primary-dark flex cursor-pointer items-center justify-center gap-1 rounded-lg"
+      className={classNames(
+        'hover:bg-primary-main flex cursor-pointer items-center justify-center gap-1 rounded-lg',
+        { 'h-[80px]': isMobile }
+      )}
       onClick={handleOnClick}
     >
       {isMixedPatients ? (
-        <Icons.MultiplePatients className="text-primary-active" />
+        <Icons.MultiplePatients
+          className={classNames('text-primary-active', { hidden: isMobile })}
+        />
       ) : (
-        <Icons.Patient className="text-primary-active" />
+          <Icons.Patient className={classNames('text-primary-active', { hidden: isMobile })} />
       )}
       <div className="flex flex-col justify-center">
         {expanded ? (
           <>
-            <div className="self-start text-[13px] font-bold text-white">
+            <div
+              className={classNames(
+                'self-start font-bold text-white',
+                isMobile ? 'text-[15px]' : 'text-[13px]'
+              )}
+            >
               {formattedPatientName}
             </div>
-            <div className="text-aqua-pale flex gap-2 text-[11px]">
+            <div
+              className={classNames(
+                'text-common-main flex gap-2',
+                isMobile ? 'items-center justify-center text-[13px]' : 'text-[11px]'
+              )}
+            >
               <div>{formattedPatientID}</div>
               <div>{patientInfo.PatientSex}</div>
               <div>{patientInfo.PatientDOB}</div>
@@ -62,11 +79,17 @@ function HeaderPatientInfo({ servicesManager, appConfig }: withAppTypes) {
           </>
         ) : (
           <div className="text-primary-active self-center text-[13px]">
-            {isMixedPatients ? 'Multiple Patients' : 'Patient'}
+              {isMixedPatients ? t('Multiple Patients') : t('Patient')}
           </div>
         )}
       </div>
-      <Icons.ChevronPatient className={`text-primary-active ${expanded ? 'rotate-180' : ''}`} />
+      <Icons.ChevronPatient
+        className={classNames(
+          'text-primary-active',
+          { hidden: isMobile },
+          { 'rotate-180': expanded }
+        )}
+      />
     </div>
   );
 }

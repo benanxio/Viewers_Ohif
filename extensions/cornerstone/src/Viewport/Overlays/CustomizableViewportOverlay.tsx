@@ -3,10 +3,12 @@ import { vec3 } from 'gl-matrix';
 import PropTypes from 'prop-types';
 import { metaData, Enums, utilities } from '@cornerstonejs/core';
 import type { ImageSliceData } from '@cornerstonejs/core/types';
-import { ViewportOverlay } from '@ohif/ui';
+import { ViewportOverlay, StudyDetails as StudyDetailsItem } from '@ohif/ui';
+import { usePatientInfo } from '@ohif/ui-next';
 import type { InstanceMetadata } from '@ohif/core/src/types';
 import { formatPN, formatDICOMDate, formatDICOMTime, formatNumberPrecision } from './utils';
 import { StackViewportData, VolumeViewportData } from '../../types/CornerstoneCacheService';
+import { useCustomContext } from '@state';
 
 import './CustomizableViewportOverlay.css';
 
@@ -45,30 +47,42 @@ const OverlayItemComponents = {
   'ohif.overlayItem.instanceNumber': InstanceNumberOverlayItem,
 };
 
-const studyDateItem = {
-  id: 'StudyDate',
-  customizationType: 'ohif.overlayItem',
-  label: '',
-  title: 'Study date',
-  condition: ({ referenceInstance }) => referenceInstance?.StudyDate,
-  contentF: ({ referenceInstance, formatters: { formatDate } }) =>
-    formatDate(referenceInstance.StudyDate),
-};
+// const studyDateItem = {
+//   id: 'StudyDate',
+//   customizationType: 'ohif.overlayItem',
+//   label: '',
+//   title: 'Study date',
+//   condition: ({ referenceInstance }) => referenceInstance?.StudyDate,
+//   contentF: ({ referenceInstance, formatters: { formatDate } }) =>
+//     formatDate(referenceInstance.StudyDate),
+// };
 
-const seriesDescriptionItem = {
-  id: 'SeriesDescription',
+// const seriesDescriptionItem = {
+//   id: 'SeriesDescription',
+//   customizationType: 'ohif.overlayItem',
+//   label: '',
+//   title: 'Series description',
+//   condition: ({ referenceInstance }) => {
+//     return referenceInstance && referenceInstance.SeriesDescription;
+//   },
+//   contentF: ({ referenceInstance }) => referenceInstance.SeriesDescription,
+// };
+
+const seriesDetailsItem = {
+  id: 'SeriesDetails',
   customizationType: 'ohif.overlayItem',
   label: '',
-  title: 'Series description',
-  condition: ({ referenceInstance }) => {
-    return referenceInstance && referenceInstance.SeriesDescription;
-  },
-  contentF: ({ referenceInstance }) => referenceInstance.SeriesDescription,
+  title: 'Detalles',
+  attribute: 'SeriesDetails',
+  condition: ({ instance }) => instance,
+  contentF: ({ servicesManager: { services }, details, patientInfo }) =>
+    StudyDetailsItem({ patientInfo, viewportGridService: services.viewportGridService, details }),
 };
 
 const topLeftItems = {
   id: 'cornerstoneOverlayTopLeft',
-  items: [studyDateItem, seriesDescriptionItem],
+  items: [seriesDetailsItem],
+  //items: [studyDateItem, seriesDescriptionItem, seriesDetailsItem],
 };
 
 const topRightItems = { id: 'cornerstoneOverlayTopRight', items: [] };
@@ -137,6 +151,8 @@ function CustomizableViewportOverlay({
 }) {
   const { cornerstoneViewportService, customizationService, toolGroupService, displaySetService } =
     servicesManager.services;
+  const { patientInfo } = usePatientInfo(servicesManager);
+  const { details } = useCustomContext();
   const [voi, setVOI] = useState({ windowCenter: null, windowWidth: null });
   const [scale, setScale] = useState(1);
   const { imageIndex } = imageSliceData;
@@ -256,6 +272,8 @@ function CustomizableViewportOverlay({
           formatTime: formatDICOMTime,
           formatNumberPrecision,
         },
+        details,
+        patientInfo,
       };
 
       if (!item) {
@@ -286,6 +304,8 @@ function CustomizableViewportOverlay({
       voi,
       scale,
       instanceNumber,
+      details,
+      patientInfo,
     ]
   );
 

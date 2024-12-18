@@ -1,13 +1,36 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Tooltip } from '@ohif/ui';
 import classnames from 'classnames';
-import { useToolbar } from '@ohif/core';
+import { useToolbar, utils } from '@ohif/core';
 
-export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
+const { getUrlParams } = utils;
+
+const MOBILE_OPTIONS = ['MeasurementTools', 'Magnify', 'Pan', 'WindowLevel'];
+const AUTH_OPTIONS = ['Print', 'Report', 'Share'];
+
+export function Toolbar({ servicesManager, buttonSection = 'primary', isMobile = false }) {
   const { toolbarButtons, onInteraction } = useToolbar({
     servicesManager,
     buttonSection,
   });
+  const { isAuthorized } = getUrlParams();
+
+  const filterButtons = useMemo(
+    () =>
+      toolbarButtons
+        ? toolbarButtons.filter(tb => {
+          if (tb.id === 'Magnify') {
+            return isMobile;
+          }
+          return (
+            MOBILE_OPTIONS.includes(tb.id) ||
+            (!isMobile && tb.id !== 'Magnify') ||
+            (AUTH_OPTIONS.includes(tb.id) && isAuthorized)
+          );
+        })
+        : [],
+    [isMobile, toolbarButtons, isAuthorized]
+  );
 
   if (!toolbarButtons.length) {
     return null;
@@ -15,7 +38,7 @@ export function Toolbar({ servicesManager, buttonSection = 'primary' }) {
 
   return (
     <>
-      {toolbarButtons.map(toolDef => {
+      {filterButtons.map(toolDef => {
         if (!toolDef) {
           return null;
         }

@@ -39,5 +39,15 @@
   "Stack Scroll": "Scroll",
   "Stop": "$t(Common:Stop)",
   "Themes": "Temas",
-  "Zoom": "Ampliar"
+  "Zoom": "Ampliar",
+  "Reset View": "$t(Common:Reset) vista",
+  "Image Slice Sync": "Sincronización de imágenes",
+  "Reference Lines": "Líneas de referencia",
+  "Window Level Region": "Región de nivel de ventana",
+  "Ultrasound Directional": "Ultrasonido Direccional",
+  "Magnify Probe": "Lupa Probe",
+  "Calibration": "Calibración",
+  "Image Overlay": "Superposición de imágenes",
+  "Zoom-in": "Ampliar",
+  "Dicom Tag Browser": "Explorador de etiquetas DICOM"
 }

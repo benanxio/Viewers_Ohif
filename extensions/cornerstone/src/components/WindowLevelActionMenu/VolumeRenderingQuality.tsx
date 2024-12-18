@@ -1,5 +1,6 @@
 import React, { ReactElement, useCallback, useState, useEffect } from 'react';
 import { VolumeRenderingQualityProps } from '../../types/ViewportPresets';
+import { useTranslation } from 'react-i18next';
 
 export function VolumeRenderingQuality({
   volumeRenderingQualityRange,
@@ -7,6 +8,7 @@ export function VolumeRenderingQuality({
   servicesManager,
   viewportId,
 }: VolumeRenderingQualityProps): ReactElement {
+  const { t } = useTranslation();
   const { cornerstoneViewportService } = servicesManager.services;
   const { min, max, step } = volumeRenderingQualityRange;
   const [quality, setQuality] = useState(null);
@@ -43,12 +45,12 @@ export function VolumeRenderingQuality({
   }, [cornerstoneViewportService, viewportId]);
   return (
     <>
-      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
+      <div className="all-in-one-menu-item flex w-full flex-row !items-center justify-between gap-[10px]">
         <label
           className="block text-white"
           htmlFor="volume"
         >
-          Quality
+          {t('VolumeRenderingOptions:Quality')}
         </label>
         {quality !== null && (
           <input

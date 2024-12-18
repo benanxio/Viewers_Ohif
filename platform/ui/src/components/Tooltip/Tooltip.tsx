@@ -155,8 +155,10 @@ const Tooltip = ({
         )}
       >
         <div>{typeof content === 'string' ? t(content) : content}</div>
-        <div className="text-aqua-pale">
-          {typeof secondaryContent === 'string' ? t(secondaryContent) : secondaryContent}
+        <div className="text-secondary-light/80">
+          {typeof secondaryContent === 'string'
+            ? t(`Tooltip:${secondaryContent}`)
+            : secondaryContent}
         </div>
         <svg
           className="text-primary-dark stroke-secondary-light absolute h-4"

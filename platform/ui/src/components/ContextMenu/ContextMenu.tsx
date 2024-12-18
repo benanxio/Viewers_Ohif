@@ -2,8 +2,10 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Typography from '../Typography';
 import Icon from '../Icon';
+import { useTranslation } from 'react-i18next';
 
 const ContextMenu = ({ items, ...props }) => {
+  const { t } = useTranslation('ContextMenu');
   if (!items) {
     return null;
   }
@@ -21,7 +23,7 @@ const ContextMenu = ({ items, ...props }) => {
           style={{ justifyContent: 'space-between' }}
           className="hover:bg-primary-dark border-primary-dark flex cursor-pointer items-center border-b px-4 py-3 transition duration-300 last:border-b-0"
         >
-          <Typography>{item.label}</Typography>
+          <Typography>{t(item.label)}</Typography>
           {item.iconRight && (
             <Icon
               name={item.iconRight}

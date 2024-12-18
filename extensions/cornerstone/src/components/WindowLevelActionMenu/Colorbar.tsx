@@ -3,6 +3,7 @@ import { SwitchButton } from '@ohif/ui';
 import { StackViewport, VolumeViewport } from '@cornerstonejs/core';
 import { ColorbarProps } from '../../types/Colorbar';
 import { utilities } from '@cornerstonejs/core';
+import { useTranslation } from 'react-i18next';
 
 export function setViewportColorbar(
   viewportId,
@@ -62,6 +63,7 @@ export function Colorbar({
   servicesManager,
   colorbarProperties,
 }: withAppTypes<ColorbarProps>): ReactElement {
+  const { t } = useTranslation('WindowLevelActionMenu');
   const { colorbarService } = servicesManager.services;
   const {
     width: colorbarWidth,
@@ -104,7 +106,7 @@ export function Colorbar({
     <div className="all-in-one-menu-item flex w-full justify-center">
       <div className="mr-2 w-[28px]"></div>
       <SwitchButton
-        label="Display Color bar"
+        label={t('Display Color bar')}
         checked={showColorbar}
         onChange={() => {
           onSetColorbar();

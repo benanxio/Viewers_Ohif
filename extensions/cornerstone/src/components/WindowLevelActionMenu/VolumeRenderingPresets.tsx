@@ -2,6 +2,7 @@ import { AllInOneMenu, Icon } from '@ohif/ui';
 import React, { ReactElement } from 'react';
 import { VolumeRenderingPresetsProps } from '../../types/ViewportPresets';
 import { VolumeRenderingPresetsContent } from './VolumeRenderingPresetsContent';
+import { useTranslation } from 'react-i18next';
 
 export function VolumeRenderingPresets({
   viewportId,
@@ -10,11 +11,11 @@ export function VolumeRenderingPresets({
   volumeRenderingPresets,
 }: VolumeRenderingPresetsProps): ReactElement {
   const { uiModalService } = servicesManager.services;
-
+  const { t } = useTranslation();
   const onClickPresets = () => {
     uiModalService.show({
       content: VolumeRenderingPresetsContent,
-      title: 'Rendering Presets',
+      title: t('WindowLevelActionMenu:Rendering Presets'),
       movable: true,
       contentProps: {
         onClose: uiModalService.hide,
@@ -29,7 +30,7 @@ export function VolumeRenderingPresets({
 
   return (
     <AllInOneMenu.Item
-      label="Rendering Presets"
+      label={t('WindowLevelActionMenu:Rendering Presets')}
       icon={<Icon name="VolumeRendering" />}
       rightIcon={<Icon name="action-new-dialog" />}
       onClick={onClickPresets}

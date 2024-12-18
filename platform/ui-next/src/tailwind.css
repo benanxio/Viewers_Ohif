@@ -4,34 +4,30 @@
 @tailwind components;
 @tailwind utilities;
 
-* {
-  min-height: 0 !important;
-}
-
 /* OHIF Theme */
 
 @layer base {
   :root {
-    --highlight: 191 74% 63%;
+    --highlight: 3 76% 57%;
     --background: 236 62% 5%;
     --foreground: 0 0% 98%;
     --card: 234 64% 10%;
     --card-foreground: 0 0% 98%;
     --popover: 219 90% 15%;
     --popover-foreground: 0 0% 98%;
-    --primary: 214 98% 60%;
+    --primary: 16 93% 59%;
     --primary-foreground: 0 0% 98%;
     --secondary: 214 66% 48%;
     --secondary-foreground: 200 50% 84%;
     --muted: 234 64% 10%;
-    --muted-foreground: 200 46% 65%;
+    --muted-foreground: 13 76% 57%;
     --accent: 217 79% 24%;
     --accent-foreground: 0 0% 98%;
     --destructive: 0 62.8% 30.6%;
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
     --input: 236 45% 21%;
-    --ring: 214 98% 60%;
+    --ring: 16 93% 59%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;
@@ -62,7 +58,7 @@
     --card-foreground: 0 0% 98%;
     --popover: 0 0% 3.9%;
     --popover-foreground: 0 0% 98%;
-    --primary: 214 98% 60%;
+    --primary: 16 93% 59%;
     --primary-foreground: 0 0% 98%;
     --secondary: 0 0% 14.9%;
     --secondary-foreground: 0 0% 98%;
@@ -74,7 +70,7 @@
     --destructive-foreground: 0 0% 98%;
     --border: 0 0% 14.9%;
     --input: 236 45% 21%;
-    --ring: 214 98% 60%;
+    --ring: 16 93% 59%;
     --chart-1: 220 70% 50%;
     --chart-2: 160 60% 45%;
     --chart-3: 30 80% 55%;

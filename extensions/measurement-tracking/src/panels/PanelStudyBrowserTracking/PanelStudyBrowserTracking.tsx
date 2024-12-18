@@ -9,9 +9,10 @@ import { StudyBrowser } from '@ohif/ui-next';
 import { useTrackedMeasurements } from '../../getContextModule';
 import { Separator } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from '@ohif/extension-default';
+import { useAppConfig } from '@state';
 import { defaultActionIcons, defaultViewPresets } from './constants';
 
-const { formatDate, createStudyBrowserTabs } = utils;
+const { formatDate, createStudyBrowserTabs, getUrlParams } = utils;
 const thumbnailNoImageModalities = [
   'SR',
   'SEG',
@@ -27,7 +28,7 @@ const thumbnailNoImageModalities = [
  *
  * @param {*} param0
  */
-function PanelStudyBrowserTracking({
+export default function PanelStudyBrowserTracking({
   servicesManager,
   getImageSrc,
   getStudiesForPatientByMRN,
@@ -43,8 +44,15 @@ function PanelStudyBrowserTracking({
     measurementService,
     studyPrefetcherService,
     customizationService,
+    xpectriaService,
   } = servicesManager.services;
   const navigate = useNavigate();
+  const { mode: studyMode } = customizationService.getCustomization('PanelStudyBrowser.studyMode', {
+    id: 'default',
+    mode: 'all',
+  });
+
+  console.log('StudyBrowser', xpectriaService);
 
   const { t } = useTranslation('Common');
 
@@ -55,7 +63,8 @@ function PanelStudyBrowserTracking({
   const [{ activeViewportId, viewports, isHangingProtocolLayout }, viewportGridService] =
     useViewportGrid();
   const [trackedMeasurements, sendTrackedMeasurementsEvent] = useTrackedMeasurements();
-  const [activeTabName, setActiveTabName] = useState('all');
+
+  const [activeTabName, setActiveTabName] = useState(studyMode);
   const [expandedStudyInstanceUIDs, setExpandedStudyInstanceUIDs] = useState([
     ...StudyInstanceUIDs,
   ]);
@@ -65,6 +74,7 @@ function PanelStudyBrowserTracking({
   const [displaySetsLoadingState, setDisplaySetsLoadingState] = useState({});
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
   const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
+  const [docVerify, setDocVerify] = useState(false);
 
   const [viewPresets, setViewPresets] = useState(
     customizationService.getCustomization('studyBrowser.viewPresets')?.value || defaultViewPresets
@@ -72,24 +82,32 @@ function PanelStudyBrowserTracking({
 
   const [actionIcons, setActionIcons] = useState(defaultActionIcons);
 
-  const updateActionIconValue = actionIcon => {
-    actionIcon.value = !actionIcon.value;
-    const newActionIcons = [...actionIcons];
-    setActionIcons(newActionIcons);
-  };
+  // const updateActionIconValue = actionIcon => {
+  //   actionIcon.value = !actionIcon.value;
+  //   const newActionIcons = [...actionIcons];
+  //   setActionIcons(newActionIcons);
+  // };
 
-  const updateViewPresetValue = viewPreset => {
-    if (!viewPreset) {
-      return;
-    }
-    const newViewPresets = viewPresets.map(preset => {
-      preset.selected = preset.id === viewPreset.id;
-      return preset;
-    });
-    setViewPresets(newViewPresets);
-  };
+  // const updateViewPresetValue = viewPreset => {
+  //   if (!viewPreset) {
+  //     return;
+  //   }
+  //   const newViewPresets = viewPresets.map(preset => {
+  //     preset.selected = preset.id === viewPreset.id;
+  //     return preset;
+  //   });
+  //   setViewPresets(newViewPresets);
+  // };
 
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
+    if (displaySetInstanceUID.includes('doc')) {
+      console.log(
+        'double click doc',
+        displaySets.find(ds => ds.displaySetInstanceUID === displaySetInstanceUID)
+      );
+      return;
+    }
+
     let updatedViewports = [];
     const viewportId = activeViewportId;
     try {
@@ -116,6 +134,10 @@ function PanelStudyBrowserTracking({
     viewports.get(activeViewportId)?.displaySetInstanceUIDs;
 
   const { trackedSeries } = trackedMeasurements.context;
+
+  useEffect(() => {
+    setActiveTabName(studyMode);
+  }, [studyMode]);
 
   // ~~ studyDisplayList
   useEffect(() => {
@@ -232,7 +254,16 @@ function PanelStudyBrowserTracking({
       uiNotificationService
     );
 
-    setDisplaySets(mappedDisplaySets);
+    setDisplaySets(displaySets => {
+      let existDoc = [];
+      if (displaySets.length > 0) {
+        const prevDoc = displaySets.find(ds => ds.description.includes('Reporte'));
+        if (prevDoc) {
+          existDoc = [prevDoc];
+        }
+      }
+      return [...existDoc, ...mappedDisplaySets];
+    });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [
     displaySetService.activeDisplaySets,
@@ -325,7 +356,16 @@ function PanelStudyBrowserTracking({
           uiNotificationService
         );
 
-        setDisplaySets(mappedDisplaySets);
+        setDisplaySets(displaySets => {
+          let existDoc = [];
+          if (displaySets.length > 0) {
+            const prevDoc = displaySets.find(ds => ds.description.includes('Reporte'));
+            if (prevDoc) {
+              existDoc = [prevDoc];
+            }
+          }
+          return [...existDoc, ...mappedDisplaySets];
+        });
       }
     );
 
@@ -363,6 +403,47 @@ function PanelStudyBrowserTracking({
   ]);
 
   const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
+
+  useEffect(() => {
+    if (
+      displaySets.length > 0 &&
+      displaySets.find(ds => ds.modality === 'DOC' && ds.displaySetInstanceUID.includes('doc'))
+    ) {
+      return;
+    } else if (displaySets.length > 0 && !docVerify) {
+      const verifyPdf = async () => {
+        setDocVerify(true);
+        const params = getUrlParams();
+        try {
+          const resp = await xpectriaService.getFilePdfBlob({
+            Sede: params.sede,
+            Fecha: params.date,
+            Cliente: params.client,
+            Uid: params.id,
+          });
+
+          if (resp.exists) {
+            const otherSet = displaySets[0];
+            const newDocSet = {
+              ...otherSet,
+              displaySetInstanceUID: otherSet.displaySetInstanceUID + 'doc',
+              modality: 'DOC',
+              numInstances: 1,
+              seriesNumber: 1,
+              isTracked: false,
+              description: 'Reporte',
+              componentType: 'thumbnailNoImage',
+            };
+
+            setDisplaySets(prevSets => [newDocSet, ...prevSets]);
+            setDocVerify(false);
+          }
+        } catch (error) { }
+      };
+
+      verifyPdf();
+    }
+  }, [displaySets, xpectriaService]);
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {
@@ -481,7 +562,7 @@ function PanelStudyBrowserTracking({
 
   return (
     <>
-      <>
+      {/* <>
         <PanelStudyBrowserHeader
           viewPresets={viewPresets}
           updateViewPresetValue={updateViewPresetValue}
@@ -493,7 +574,7 @@ function PanelStudyBrowserTracking({
           className="bg-black"
           thickness="2px"
         />
-      </>
+      </> */}
 
       <StudyBrowser
         tabs={tabs}
@@ -527,8 +608,6 @@ PanelStudyBrowserTracking.propTypes = {
   getStudiesForPatientByMRN: PropTypes.func.isRequired,
   requestDisplaySetCreationForStudy: PropTypes.func.isRequired,
 };
-
-export default PanelStudyBrowserTracking;
 
 function getImageIdForThumbnail(displaySet: any, imageIds: any) {
   let imageId;

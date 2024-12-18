@@ -1,7 +1,6 @@
 {
   "name": "ohif-monorepo-root",
   "private": true,
-  "packageManager": "yarn@1.22.22",
   "workspaces": {
     "packages": [
       "platform/*",
@@ -87,7 +86,7 @@
     "@babel/preset-react": "^7.16.7",
     "@babel/preset-typescript": "^7.13.0",
     "prettier": "^3.3.3",
-    "prettier-plugin-tailwindcss": "0.6.8"
+    "prettier-plugin-tailwindcss": "0.6.9"
   },
   "husky": {
     "hooks": {

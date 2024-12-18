@@ -47,34 +47,36 @@ export function StudyBrowserSort({ servicesManager }: withAppTypes) {
     };
   }, [displaySetService, selectedSort, sortDirection]);
 
-  return (
-    <div className="flex items-center gap-1">
-      <DropdownMenu>
-        <DropdownMenuTrigger className="border-inputfield-main focus:border-inputfield-main flex h-[26px] w-[125px] items-center justify-start rounded border bg-black p-2 text-base text-white">
-          {selectedSort.label}
-        </DropdownMenuTrigger>
-        <DropdownMenuContent className="bg-black">
-          {sortFunctions.map(sort => (
-            <DropdownMenuItem
-              key={sort.label}
-              className="text-white"
-              onClick={() => handleSortChange(sort)}
-            >
-              {sort.label}
-            </DropdownMenuItem>
-          ))}
-        </DropdownMenuContent>
-      </DropdownMenu>
-      <button
-        onClick={toggleSortDirection}
-        className="flex h-[26px] items-center justify-center bg-black"
-      >
-        {sortDirection === 'ascending' ? (
-          <Icons.SortingAscending className="text-primary-main w-2" />
-        ) : (
-          <Icons.SortingDescending className="text-primary-main w-2" />
-        )}
-      </button>
-    </div>
-  );
+  return null;
+
+  // return (
+  //   <div className="flex items-center gap-1">
+  //     <DropdownMenu>
+  //       <DropdownMenuTrigger className="border-inputfield-main focus:border-inputfield-main flex h-[26px] w-[125px] items-center justify-start rounded border bg-black p-2 text-base text-white">
+  //         {selectedSort.label}
+  //       </DropdownMenuTrigger>
+  //       <DropdownMenuContent className="bg-black">
+  //         {sortFunctions.map(sort => (
+  //           <DropdownMenuItem
+  //             key={sort.label}
+  //             className="text-white"
+  //             onClick={() => handleSortChange(sort)}
+  //           >
+  //             {sort.label}
+  //           </DropdownMenuItem>
+  //         ))}
+  //       </DropdownMenuContent>
+  //     </DropdownMenu>
+  //     <button
+  //       onClick={toggleSortDirection}
+  //       className="flex h-[26px] items-center justify-center bg-black"
+  //     >
+  //       {sortDirection === 'ascending' ? (
+  //         <Icons.SortingAscending className="text-primary-main w-2" />
+  //       ) : (
+  //         <Icons.SortingDescending className="text-primary-main w-2" />
+  //       )}
+  //     </button>
+  //   </div>
+  // );
 }

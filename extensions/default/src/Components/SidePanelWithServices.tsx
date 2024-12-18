@@ -9,6 +9,7 @@ export type SidePanelWithServicesProps = {
   activeTabIndex: number;
   tabs: any;
   expandedWidth?: number;
+  isMobile?: boolean;
 };
 
 const SidePanelWithServices = ({

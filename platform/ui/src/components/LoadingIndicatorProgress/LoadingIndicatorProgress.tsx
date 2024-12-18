@@ -19,13 +19,13 @@ function LoadingIndicatorProgress({ className, textBlock, progress }) {
       )}
     >
       <Icon
-        name="loading-ohif-mark"
-        className="h-12 w-12 text-white"
+        name="XpectriaIcon"
+        className="h-12 w-auto"
       />
       <div className="w-48">
         <ProgressLoadingBar progress={progress} />
       </div>
-      {textBlock}
+      <p className="font-semibold text-white">{textBlock}</p>
     </div>
   );
 }

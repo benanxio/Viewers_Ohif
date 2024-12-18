@@ -18,5 +18,12 @@
   "Show": "Show",
   "Stop": "Stop",
   "StudyDate": "Study Date",
-  "Yes": "Yes"
+  "Yes": "Yes",
+  "days": "days",
+  "weeks": "weeks",
+  "months": "months",
+  "years": "years",
+  "formattedAge": "{{value}} {{unit}}",
+  "invalidAgeFormat": "Invalid format",
+  "unknownUnit": "unknown unit"
 }

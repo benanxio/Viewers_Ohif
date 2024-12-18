@@ -1,9 +1,9 @@
 {
-  "name": "OHIF Viewer",
+  "name": "Xpectria Viewer",
   "short_name": "Viewer",
-  "description": "OHIF Viewer",
+  "description": "Xpectria Viewer",
   "dir": "auto",
-  "lang": "en-US",
+  "lang": "es-MX",
   "orientation": "any",
   "icons": [
     {

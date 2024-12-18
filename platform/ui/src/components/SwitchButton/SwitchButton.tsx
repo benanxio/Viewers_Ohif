@@ -32,7 +32,7 @@ const SwitchButton = ({
 
   // Thanks goes to https://codepen.io/lhermann/pen/EBGZRZ for the inspiration to the code below.
   return (
-    <label className="switch-button flex w-full cursor-pointer items-center justify-between text-[14px]">
+    <label className="switch-button pointer-events-auto flex w-full cursor-pointer items-center justify-between text-[14px]">
       {label && labelLocation === SwitchLabelLocation.left && <div>{label}</div>}
       <div className="relative">
         <input

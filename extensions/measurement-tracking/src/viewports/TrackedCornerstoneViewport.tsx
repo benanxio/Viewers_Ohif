@@ -22,7 +22,7 @@ function TrackedCornerstoneViewport(
 
   // Todo: handling more than one displaySet on the same viewport
   const displaySet = displaySets[0];
-  const { t } = useTranslation('Common');
+  const { t } = useTranslation('TrackedCornerstoneViewport');
 
   const [viewportGrid] = useViewportGrid();
   const { activeViewportId } = viewportGrid;

@@ -1,11 +1,13 @@
 import React, { ReactElement, useCallback, useEffect, useState, useRef } from 'react';
 import { VolumeShiftProps } from '../../types/ViewportPresets';
+import { useTranslation } from 'react-i18next';
 
 export function VolumeShift({
   viewportId,
   commandsManager,
   servicesManager,
 }: VolumeShiftProps): ReactElement {
+  const { t } = useTranslation();
   const { cornerstoneViewportService } = servicesManager.services;
   const [minShift, setMinShift] = useState<number | null>(null);
   const [maxShift, setMaxShift] = useState<number | null>(null);
@@ -57,12 +59,12 @@ export function VolumeShift({
 
   return (
     <>
-      <div className="all-in-one-menu-item flex  w-full flex-row !items-center justify-between gap-[10px]">
+      <div className="all-in-one-menu-item flex w-full flex-row !items-center justify-between gap-[10px]">
         <label
-          className="block  text-white"
+          className="block text-white"
           htmlFor="shift"
         >
-          Shift
+          {t('VolumeRenderingOptions:Shift')}
         </label>
         {step !== null && (
           <input

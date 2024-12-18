@@ -4,6 +4,8 @@ import PropTypes from 'prop-types';
 import { StudyItem } from '../StudyItem';
 import { StudyBrowserSort } from '../StudyBrowserSort';
 import { StudyBrowserViewOptions } from '../StudyBrowserViewOptions';
+import { useCustomContext } from '@state';
+import classNames from 'classnames';
 
 const getTrackedSeries = displaySets => {
   let trackedSeries = 0;
@@ -33,6 +35,7 @@ const StudyBrowser = ({
   viewPresets,
   onThumbnailContextMenu,
 }: withAppTypes) => {
+  const { isMobile } = useCustomContext();
   const getTabContent = () => {
     const tabData = tabs.find(tab => tab.name === activeTabName);
     const viewPreset = viewPresets
@@ -62,6 +65,7 @@ const StudyBrowser = ({
               data-cy="thumbnail-list"
               viewPreset={viewPreset}
               onThumbnailContextMenu={onThumbnailContextMenu}
+              isMobile={isMobile}
             />
           </React.Fragment>
         );
@@ -71,21 +75,28 @@ const StudyBrowser = ({
 
   return (
     <div
-      className="ohif-scrollbar invisible-scrollbar bg-bkg-low flex flex-1 flex-col gap-[4px] overflow-auto"
+      // className="ohif-scrollbar invisible-scrollbar bg-bkg-low flex flex-1 flex-col gap-[4px] overflow-auto"
+      className={classNames(
+        isMobile
+          ? 'ohif-scrollbar-horizontal flex flex-1 flex-row overflow-x-auto p-1'
+          : 'ohif-scrollbar invisible-scrollbar flex flex-1 flex-col overflow-y-auto'
+      )}
       data-cy={'studyBrowser-panel'}
     >
       <div>
         {showSettings && (
-          <div className="w-100 bg-bkg-low flex h-[48px] items-center justify-center gap-[10px] px-[8px] py-[10px]">
-            <>
-              <StudyBrowserViewOptions
-                tabs={tabs}
-                onSelectTab={onClickTab}
-                activeTabName={activeTabName}
-              />
-              <StudyBrowserSort servicesManager={servicesManager} />
-            </>
-          </div>
+          <>
+            <div className="w-100 bg-bkg-low hidden h-[48px] items-center justify-center gap-[10px] px-[8px] py-[10px]">
+              <>
+                <StudyBrowserViewOptions
+                  tabs={tabs}
+                  onSelectTab={onClickTab}
+                  activeTabName={activeTabName}
+                />
+              </>
+            </div>
+            <StudyBrowserSort servicesManager={servicesManager} />
+          </>
         )}
         {getTabContent()}
       </div>

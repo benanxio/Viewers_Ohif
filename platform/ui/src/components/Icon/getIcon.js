@@ -176,6 +176,13 @@ import { ReactComponent as investigationalUse } from './../../assets/icons/illus
 import { ReactComponent as actionNewDialog } from './../../assets/icons/action-new-dialog.svg';
 import { ReactComponent as iconToolCobbAngle } from './../../assets/icons/tool-cobb-angle.svg';
 import { ReactComponent as iconToolWindowRegion } from './../../assets/icons/tool-window-region.svg';
+/* Medixon */
+import { ReactComponent as iconReport } from './../../assets/icons/Medixon/report_icon.svg';
+import { ReactComponent as XpectriaIcon } from './../../assets/icons/Medixon/Logo_xpectria.svg';
+import { ReactComponent as ShareIcon } from './../../assets/icons/Medixon/shareIcon.svg';
+import { ReactComponent as ClipBoardIcon } from './../../assets/icons/Medixon/ClipBoardIcon.svg';
+import { ReactComponent as PrinterIcon } from './../../assets/icons/Medixon/Printer.svg';
+import { ReactComponent as customViewportWindowLevel } from './../../assets/icons/Medixon/Custom-viewport-window-level.svg';
 
 import CTAAA from './../../assets/icons/CT-AAA.png';
 import CTAAA2 from './../../assets/icons/CT-AAA2.png';
@@ -376,6 +383,14 @@ const ICONS = {
   'icon-settings': iconSettings,
   'icon-toolbar-back': iconToolbarBack,
   'icon-multiple-patients': iconMultiplePatients,
+
+  /* Medixon ICONS */
+  XpectriaIcon: XpectriaIcon,
+  iconReport: iconReport,
+  ShareIcon: ShareIcon,
+  ClipBoardIcon: ClipBoardIcon,
+  PrinterIcon: PrinterIcon,
+  customViewportWindowLevel: customViewportWindowLevel,
   /** Volume Rendering */
   'CT-AAA': CTAAA,
   'CT-AAA2': CTAAA2,

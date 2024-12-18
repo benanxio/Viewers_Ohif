@@ -30,7 +30,7 @@ const classes = {
       baseClasses.Primary,
       isActive
         ? isExpanded
-          ? 'border-primary-dark !bg-primary-dark hover:border-primary-dark !text-primary-light'
+          ? 'border-primary-dark !bg-primary-dark hover:border-primary-dark !text-primary-active'
           : 'border-primary-light bg-primary-light rounded-md'
         : `focus:!text-black focus:!rounded-md focus:!border-primary-light focus:!bg-primary-light ${isExpanded ? 'border-primary-dark bg-primary-dark !text-primary-light' : 'border-secondary-dark bg-secondary-dark group-hover/button:border-primary-dark group-hover/button:text-primary-light hover:!bg-primary-dark hover:border-primary-dark focus:!text-black'}`
     ),
@@ -66,7 +66,7 @@ const DefaultListItemRenderer = props => {
         'flex h-8 w-full select-none flex-row items-center p-3',
         'whitespace-pre text-base',
         className,
-        `${isActive ? 'hover:opacity-80' : 'hover:bg-primary-dark '}`
+        `${isActive ? 'hover:opacity-80' : 'hover:bg-primary-dark'}`
       )}
     >
       {icon && (
@@ -145,7 +145,7 @@ const SplitButton = ({
             >
               <Tooltip
                 isDisabled={state.isExpanded || !secondary.tooltip}
-                content={secondary.tooltip}
+                content={t(`Tooltip:${secondary.tooltip}`)}
                 className="h-full"
               >
                 <Icon

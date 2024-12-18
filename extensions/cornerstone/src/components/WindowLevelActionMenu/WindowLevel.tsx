@@ -43,7 +43,7 @@ export function WindowLevel({
               {presetsArray.map((preset, index) => (
                 <AllInOneMenu.Item
                   key={`${modality}-${index}`}
-                  label={preset.description}
+                  label={t(preset.description)}
                   secondaryLabel={`${preset.window} / ${preset.level}`}
                   onClick={() => onSetWindowLevel(preset)}
                 />

@@ -84,6 +84,7 @@ import {
 import { DataRow } from './components/DataRow';
 
 import { useNotification, NotificationProvider } from './contextProviders';
+export { usePatientInfo } from './hooks';
 
 export {
   ErrorBoundary,

@@ -14,6 +14,7 @@ import PanelServiceType from '../services/PanelService';
 import UIDialogServiceType from '../services/UIDialogService';
 import UIViewportDialogServiceType from '../services/UIViewportDialogService';
 import StudyPrefetcherServiceType from '../services/StudyPrefetcherService';
+import XpectriaServiceType from '../services/Xpectria/XpectriaService';
 
 import ServicesManagerType from '../services/ServicesManager';
 import CommandsManagerType from '../classes/CommandsManager';
@@ -55,6 +56,7 @@ declare global {
     export type UIViewportDialogService = UIViewportDialogServiceType;
     export type PanelService = PanelServiceType;
     export type StudyPrefetcherService = StudyPrefetcherServiceType;
+    export type XpectriaService = XpectriaServiceType;
 
     export interface Managers {
       servicesManager?: ServicesManager;
@@ -78,9 +80,11 @@ declare global {
       uiViewportDialogService?: UIViewportDialogServiceType;
       panelService?: PanelServiceType;
       studyPrefetcherService?: StudyPrefetcherServiceType;
+      xpectriaService?: XpectriaServiceType;
     }
 
     export interface Config {
+      studyBrowserMode?: 'all' | 'primary';
       routerBasename?: string;
       customizationService?: CustomizationServiceType;
       extensions?: string[];

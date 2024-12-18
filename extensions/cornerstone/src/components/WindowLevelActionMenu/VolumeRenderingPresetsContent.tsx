@@ -3,6 +3,8 @@ import { ButtonEnums } from '@ohif/ui';
 import React, { ReactElement, useState, useCallback } from 'react';
 import { Button, InputFilterText } from '@ohif/ui';
 import { ViewportPreset, VolumeRenderingPresetsContentProps } from '../../types/ViewportPresets';
+import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
 
 export function VolumeRenderingPresetsContent({
   presets,
@@ -10,6 +12,7 @@ export function VolumeRenderingPresetsContent({
   commandsManager,
   onClose,
 }: VolumeRenderingPresetsContentProps): ReactElement {
+  const { t } = useTranslation('VolumeRenderingPresets');
   const [filteredPresets, setFilteredPresets] = useState(presets);
   const [searchValue, setSearchValue] = useState('');
   const [selectedPreset, setSelectedPreset] = useState<ViewportPreset | null>(null);
@@ -18,11 +21,15 @@ export function VolumeRenderingPresetsContent({
     (value: string) => {
       setSearchValue(value);
       const filtered = value
-        ? presets.filter(preset => preset.name.toLowerCase().includes(value.toLowerCase()))
+        ? presets.filter(
+          preset =>
+            preset.name.toLowerCase().includes(value.toLowerCase()) ||
+            t(preset.name).toLowerCase().includes(value.toLowerCase())
+        )
         : presets;
       setFilteredPresets(filtered);
     },
-    [presets]
+    [presets, t]
   );
 
   const handleApply = useCallback(
@@ -46,12 +53,12 @@ export function VolumeRenderingPresetsContent({
             <InputFilterText
               value={searchValue}
               onDebounceChange={handleSearchChange}
-              placeholder={'Search all'}
+              placeholder={t('Search all')}
             />
           </div>
         </div>
         <div className="ohif-scrollbar overflow h-[385px] w-full overflow-y-auto">
-          <div className="grid grid-cols-4 gap-3 pt-2 pr-3">
+          <div className="grid grid-cols-2 gap-3 pt-2 pr-3">
             {filteredPresets.map((preset, index) => (
               <div
                 key={index}
@@ -63,14 +70,15 @@ export function VolumeRenderingPresetsContent({
               >
                 <Icon
                   name={preset.name}
-                  className={
+                  className={classNames(
+                    'h-[150px] w-[190px] max-w-none rounded border-2',
                     selectedPreset?.name === preset.name
-                      ? 'border-primary-light h-[75px] w-[95px] max-w-none rounded border-2'
-                      : 'hover:border-primary-light h-[75px] w-[95px] max-w-none rounded border-2 border-black'
-                  }
+                      ? 'border-primary-light'
+                      : 'hover:border-primary-light border-black'
+                  )}
                 />
-                <label className="text-aqua-pale mt-2 text-left text-xs">
-                  {formatLabel(preset.name, 11)}
+                <label className="mt-2 text-left text-xs text-white">
+                  {formatLabel(t(preset.name), 35)}
                 </label>
               </div>
             ))}
@@ -85,8 +93,7 @@ export function VolumeRenderingPresetsContent({
             type={ButtonEnums.type.secondary}
             onClick={onClose}
           >
-            {' '}
-            Cancel{' '}
+            {` ${t('Buttons:Cancel')} `}
           </Button>
         </div>
       </footer>

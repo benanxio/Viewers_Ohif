@@ -112,7 +112,7 @@ export function WindowLevelActionMenu({
 
   return (
     <AllInOneMenu.IconMenu
-      icon="viewport-window-level"
+      icon="customViewportWindowLevel"
       verticalDirection={verticalDirection}
       horizontalDirection={horizontalDirection}
       iconClassName={classNames(
@@ -178,7 +178,7 @@ export function WindowLevelActionMenu({
         )}
 
         {volumeRenderingQualityRange && is3DVolume && (
-          <AllInOneMenu.SubMenu itemLabel="Rendering Options">
+          <AllInOneMenu.SubMenu itemLabel={t('Rendering Options')}>
             <VolumeRenderingOptions
               viewportId={viewportId}
               commandsManager={commandsManager}

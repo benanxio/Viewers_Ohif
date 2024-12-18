@@ -4,10 +4,17 @@ import ViewportImageScrollbar from './ViewportImageScrollbar';
 import CustomizableViewportOverlay from './CustomizableViewportOverlay';
 import ViewportOrientationMarkers from './ViewportOrientationMarkers';
 import ViewportImageSliceLoadingIndicator from './ViewportImageSliceLoadingIndicator';
+import { useCustomContext } from '@state';
+
+const thumbnailNoImageModalities = ['SR', 'SEG', 'SM', 'RTSTRUCT', 'RTPLAN', 'RTDOSE', 'DOC', 'OT'];
 
 function CornerstoneOverlays(props: withAppTypes) {
   const { viewportId, element, scrollbarHeight, servicesManager } = props;
-  const { cornerstoneViewportService } = servicesManager.services;
+  const {
+    cornerstoneViewportService,
+    displaySetService: { activeDisplaySets },
+  } = servicesManager.services;
+  const { updateTotalData, totalData } = useCustomContext();
   const [imageSliceData, setImageSliceData] = useState({
     imageIndex: 0,
     numberOfSlices: 0,
@@ -30,6 +37,15 @@ function CornerstoneOverlays(props: withAppTypes) {
       unsubscribe();
     };
   }, [viewportId]);
+
+  useEffect(() => {
+    if (activeDisplaySets) {
+      const total = activeDisplaySets.filter(
+        ad => !thumbnailNoImageModalities.includes(ad.Modality)
+      );
+      updateTotalData(total);
+    }
+  }, [activeDisplaySets]);
 
   if (!element) {
     return null;

@@ -33,6 +33,7 @@ import {
   PanelService,
   WorkflowStepsService,
   StudyPrefetcherService,
+  XpectriaService,
 } from './services';
 
 import { DisplaySetMessage, DisplaySetMessageList } from './services/DisplaySetService';
@@ -87,6 +88,7 @@ const OHIF = {
   useActiveViewportDisplaySets,
   WorkflowStepsService,
   StudyPrefetcherService,
+  XpectriaService,
 };
 
 export {
@@ -131,6 +133,7 @@ export {
   PanelService,
   WorkflowStepsService,
   StudyPrefetcherService,
+  XpectriaService,
   useToolbar,
   useActiveViewportDisplaySets,
 };
