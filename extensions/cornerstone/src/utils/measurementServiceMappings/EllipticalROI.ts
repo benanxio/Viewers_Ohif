@@ -5,9 +5,10 @@ import { getIsVisible } from './utils/getIsVisible';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 import { getStatisticDisplayString } from './utils/getValueDisplayString';
+import * as cs3dTools from '@cornerstonejs/tools';
 
 const EllipticalROI = {
-  toAnnotation: measurement => {},
+  toAnnotation: measurement => cs3dTools.annotation.state.getAnnotation(measurement.uid),
   toMeasurement: (
     csToolsEventDetail,
     displaySetService,

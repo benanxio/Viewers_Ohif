@@ -12,7 +12,7 @@ import { PanelStudyBrowserHeader } from '@ohif/extension-default';
 import { useAppConfig } from '@state';
 import { defaultActionIcons, defaultViewPresets } from './constants';
 
-const { formatDate, createStudyBrowserTabs, getUrlParams } = utils;
+const { formatDate, createStudyBrowserTabs } = utils;
 const thumbnailNoImageModalities = [
   'SR',
   'SEG',
@@ -51,8 +51,6 @@ export default function PanelStudyBrowserTracking({
     id: 'default',
     mode: 'all',
   });
-
-  console.log('StudyBrowser', xpectriaService);
 
   const { t } = useTranslation('Common');
 
@@ -413,14 +411,8 @@ export default function PanelStudyBrowserTracking({
     } else if (displaySets.length > 0 && !docVerify) {
       const verifyPdf = async () => {
         setDocVerify(true);
-        const params = getUrlParams();
         try {
-          const resp = await xpectriaService.getFilePdfBlob({
-            Sede: params.sede,
-            Fecha: params.date,
-            Cliente: params.client,
-            Uid: params.id,
-          });
+          const resp = await xpectriaService.XpectriaApi.verifyReport();
 
           if (resp.exists) {
             const otherSet = displaySets[0];
@@ -588,8 +580,9 @@ export default function PanelStudyBrowserTracking({
         onClickUntrack={displaySetInstanceUID => {
           onClickUntrack(displaySetInstanceUID);
         }}
-        onClickThumbnail={() => {}}
-        onDoubleClickThumbnail={onDoubleClickThumbnailHandler}
+        // onClickThumbnail={() => {}}
+        onClickThumbnail={onDoubleClickThumbnailHandler}
+        onDoubleClickThumbnail={() => { }}
         activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}

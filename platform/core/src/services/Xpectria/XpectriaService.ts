@@ -1,4 +1,5 @@
 import { PubSubService } from '../_shared/pubSubServiceInterface';
+import XpectriaEndpoints from './XpectriaEndpoints';
 
 class XpectriaService extends PubSubService {
   public static readonly EVENTS = {
@@ -13,6 +14,8 @@ class XpectriaService extends PubSubService {
       return new XpectriaService();
     },
   };
+
+  public XpectriaApi = new XpectriaEndpoints();
 
   constructor() {
     super(XpectriaService.EVENTS);

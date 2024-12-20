@@ -5,11 +5,12 @@ import { getIsLocked } from './utils/getIsLocked';
 import { getIsVisible } from './utils/getIsVisible';
 import { getDisplayUnit } from './utils';
 import { getStatisticDisplayString } from './utils/getValueDisplayString';
+import * as cs3dTools from '@cornerstonejs/tools';
 /**
  * Represents a mapping utility for Planar Freehand ROI measurements.
  */
 const PlanarFreehandROI = {
-  toAnnotation: measurement => {},
+  toAnnotation: measurement => cs3dTools.annotation.state.getAnnotation(measurement.uid),
 
   /**
    * Maps cornerstone annotation event data to measurement service format.

@@ -4,15 +4,13 @@ import { utils } from '@ohif/core';
 import { getIsLocked } from './utils/getIsLocked';
 import { getIsVisible } from './utils/getIsVisible';
 import { getDisplayUnit } from './utils';
-import { getStatisticDisplayString } from './utils/getValueDisplayString';
+import * as csTools from '@cornerstonejs/tools';
 
 /**
  * Represents a mapping utility for Spline ROI measurements.
  */
 const SplineROI = {
-  toAnnotation: measurement => {
-    // Implementation for converting measurement to annotation
-  },
+  toAnnotation: measurement => csTools.annotation.state.getAnnotation(measurement.uid),
 
   /**
    * Maps cornerstone annotation event data to measurement service format.

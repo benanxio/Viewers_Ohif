@@ -2,8 +2,9 @@ import SUPPORTED_TOOLS from './constants/supportedTools';
 import { getIsLocked } from './utils/getIsLocked';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { getIsVisible } from './utils/getIsVisible';
+import * as cs3dTools from '@cornerstonejs/tools';
 const Length = {
-  toAnnotation: measurement => {},
+  toAnnotation: measurement => cs3dTools.annotation.state.getAnnotation(measurement.uid),
 
   /**
    * Maps cornerstone annotation event data to measurement service format.

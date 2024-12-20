@@ -21,51 +21,10 @@ const XpectriaProvider = ({ children, service = null }) => {
 
   const [options, setOptions] = useState(DEFAULT_OPTIONS);
 
-  /**
-   * Define the `getFilePdfBlob` method using `useCallback`.
-   */
-  const getFilePdfBlob = useCallback(
-    async (params: Record<string, string>) => {
-      const queryString = new URLSearchParams(params).toString();
-      const url = `${process.env.BACKEND_URL}/reports/verify_report/?${queryString}`;
-
-      try {
-        const response = await fetch(url, { method: 'GET' });
-
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        const rep = response.json();
-        service._broadcastEvent(XpectriaService.EVENTS.FETCH_SUCCESS, { url, rep });
-        return rep;
-      } catch (error: any) {
-        service._broadcastEvent(XpectriaService.EVENTS.FETCH_ERROR, { url, error: error.message });
-        throw new Error(`Error fetching Blob: ${error.message}`);
-      }
-    },
-    [service]
-  );
-
-  /**
-   * Attach the implementation of `getFilePdfBlob` to the service.
-   */
-  useEffect(() => {
-    if (!service) {
-      return;
-    }
-
-    console.log('XpectriaProvider', service);
-
-    //const xpectriaService = service.REGISTRATION.create({ configuration: {} });
-    service.setServiceImplementation({
-      getFilePdfBlob,
-    });
-  }, [service, getFilePdfBlob]);
-
   const { isLoading, errorMessage } = options;
 
   return (
-    <Provider value={{ getFilePdfBlob }}>
+    <Provider value={{}}>
       {isLoading && <div>{t('Loading...')}</div>}
       {errorMessage && (
         <div>

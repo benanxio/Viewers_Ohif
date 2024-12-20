@@ -5,9 +5,10 @@ import { utils } from '@ohif/core';
 import { getStatisticDisplayString } from './utils/getValueDisplayString';
 import { getIsLocked } from './utils/getIsLocked';
 import { getIsVisible } from './utils/getIsVisible';
+import * as cs3dTools from '@cornerstonejs/tools';
 
 const RectangleROI = {
-  toAnnotation: measurement => {},
+  toAnnotation: measurement => cs3dTools.annotation.state.getAnnotation(measurement.uid),
   toMeasurement: (
     csToolsEventDetail,
     displaySetService,

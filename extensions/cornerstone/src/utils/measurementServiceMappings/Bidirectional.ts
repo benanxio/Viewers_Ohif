@@ -4,9 +4,10 @@ import { utils } from '@ohif/core';
 import { getDisplayUnit } from './utils';
 import { getIsLocked } from './utils/getIsLocked';
 import { getIsVisible } from './utils/getIsVisible';
+import * as cs3dTools from '@cornerstonejs/tools';
 
 const Bidirectional = {
-  toAnnotation: measurement => {},
+  toAnnotation: measurement => cs3dTools.annotation.state.getAnnotation(measurement.uid),
   toMeasurement: (
     csToolsEventDetail,
     displaySetService,

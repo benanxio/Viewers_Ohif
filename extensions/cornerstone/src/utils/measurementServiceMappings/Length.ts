@@ -4,9 +4,10 @@ import { getIsVisible } from './utils/getIsVisible';
 import getSOPInstanceAttributes from './utils/getSOPInstanceAttributes';
 import { utils } from '@ohif/core';
 import { config } from '@cornerstonejs/tools/annotation';
+import * as cs3dTools from '@cornerstonejs/tools';
 
 const Length = {
-  toAnnotation: measurement => {},
+  toAnnotation: measurement => cs3dTools.annotation.state.getAnnotation(measurement.uid),
 
   /**
    * Maps cornerstone annotation event data to measurement service format.

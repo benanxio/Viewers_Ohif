@@ -4,11 +4,12 @@ import { getDisplayUnit } from './utils';
 import { utils } from '@ohif/core';
 import { getIsLocked } from './utils/getIsLocked';
 import { getIsVisible } from './utils/getIsVisible';
+import * as cs3dTools from '@cornerstonejs/tools';
 /**
  * Represents a mapping utility for Livewire measurements.
  */
 const LivewireContour = {
-  toAnnotation: measurement => {},
+  toAnnotation: measurement => cs3dTools.annotation.state.getAnnotation(measurement.uid),
 
   /**
    * Maps cornerstone annotation event data to measurement service format.

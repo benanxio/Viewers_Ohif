@@ -1,6 +1,15 @@
 import qs from 'query-string';
 
-const getUrlParams = (saveValue = false) => {
+export interface GetUrlParamsReturn {
+  client: string;
+  id: string;
+  url: string;
+  isAuthorized: boolean;
+  sede: string;
+  date: string;
+}
+
+const getUrlParams = (saveValue = false): GetUrlParamsReturn => {
   const { query } = qs.parseUrl(window.location.href);
 
   const unparsedId = query.id as string;

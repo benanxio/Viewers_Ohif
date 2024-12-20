@@ -1,6 +1,8 @@
 import log from '../../log';
+import AsyncEndpoints from '../Xpectria/XpectriaEndpoints';
 import guid from '../../utils/guid';
 import { PubSubService } from '../_shared/pubSubServiceInterface';
+import uid from 'extensions/dicom-microscopy/src/utils/DEVICE_OBSERVER_UID';
 
 /**
  * Measurement source schema
@@ -66,6 +68,8 @@ const MEASUREMENT_SCHEMA_KEYS = [
   'referencedImageId',
 ];
 
+const MEASUREMENT_URL = process.env.MEASUREMENT_URL || 'http://localhost:3004';
+
 const EVENTS = {
   MEASUREMENT_UPDATED: 'event::measurement_updated',
   INTERNAL_MEASUREMENT_UPDATED: 'event:internal_measurement_updated',
@@ -112,6 +116,8 @@ class MeasurementService extends PubSubService {
       return new MeasurementService();
     },
   };
+
+  public api = new AsyncEndpoints();
 
   public static readonly EVENTS = EVENTS;
   public static VALUE_TYPES = VALUE_TYPES;
@@ -358,6 +364,8 @@ class MeasurementService extends PubSubService {
 
     log.info(`Updating internal measurement representation...`, updatedMeasurement);
 
+    this.api.updateMeasurementLabel(measurementUID, updatedMeasurement);
+
     this.measurements.set(measurementUID, updatedMeasurement);
 
     this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
@@ -379,6 +387,7 @@ class MeasurementService extends PubSubService {
    * @param {function} toMeasurementSchema A function to get the `data` into the same shape as the source annotationType.
    */
   addRawMeasurement(source, annotationType, data, toMeasurementSchema, dataSource = {}) {
+    console.log('ctm', { source, annotationType, data, toMeasurementSchema, dataSource });
     if (!this._isValidSource(source)) {
       log.warn('Invalid source. Exiting early.');
       return;
@@ -415,7 +424,7 @@ class MeasurementService extends PubSubService {
       return;
     }
 
-    let internalUID = data.id;
+    let internalUID = data.id ?? data.uid;
     if (!internalUID) {
       internalUID = guid();
       log.warn(`Measurement ID not found. Generating UID: ${internalUID}`);
@@ -538,14 +547,42 @@ class MeasurementService extends PubSubService {
       // TODO: Ultimately, each annotation should have a selected flag right from the source.
       // For now, it is just added in OHIF here and in setMeasurementSelected.
       this.measurements.set(internalUID, newMeasurement);
+      const annotation = source.getAnnotation(annotationType, sourceAnnotationDetail.uid);
+      this.api.removePointsInShape(annotation);
+
       if (isUpdate) {
+        if (annotation) {
+          this.api.handleMeasurementUpdate(newMeasurement, oldMeasurement, {
+            annotation,
+            annotationUID: annotation.annotationUID,
+            referenceStudyUID: newMeasurement.referenceStudyUID,
+            referenceSeriesUID: newMeasurement.referenceSeriesUID,
+            toolName: annotation.metadata.toolName,
+            uid: newMeasurement.uid,
+            _id: newMeasurement.uid,
+          });
+        }
+
         this._broadcastEvent(this.EVENTS.MEASUREMENT_UPDATED, {
           source,
           measurement: newMeasurement,
           notYetUpdatedAtSource: false,
         });
       } else {
-        log.info('Measurement added.', newMeasurement);
+        //console.log(sourceAnnotationDetail);
+        //log.info('Measurement added.', newMeasurement);
+        if (annotation) {
+          this.api.handleCreateMeasurement({
+            annotation,
+            annotationUID: annotation.annotationUID,
+            referenceStudyUID: newMeasurement.referenceStudyUID,
+            referenceSeriesUID: newMeasurement.referenceSeriesUID,
+            toolName: annotation.metadata.toolName,
+            uid: newMeasurement.uid,
+            _id: newMeasurement.uid,
+          });
+        }
+
         this._broadcastEvent(this.EVENTS.MEASUREMENT_ADDED, {
           source,
           measurement: newMeasurement,
@@ -553,6 +590,7 @@ class MeasurementService extends PubSubService {
       }
     } else {
       log.info('Measurement started.', newMeasurement);
+
       this.measurements.set(internalUID, newMeasurement);
     }
 
@@ -574,7 +612,7 @@ class MeasurementService extends PubSubService {
     }
 
     const source = measurement.source;
-
+    this.api.handleDeleteMeasurement(measurementUID);
     this.unmappedMeasurements.delete(measurementUID);
     this.measurements.delete(measurementUID);
     this._broadcastEvent(this.EVENTS.MEASUREMENT_REMOVED, {

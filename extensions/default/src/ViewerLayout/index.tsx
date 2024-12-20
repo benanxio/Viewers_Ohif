@@ -22,7 +22,12 @@ function ViewerLayout({
 }: withAppTypes): React.FunctionComponent {
   const [appConfig] = useAppConfig();
   const { isMobile } = useCustomContext();
-  const { panelService, hangingProtocolService } = servicesManager.services;
+  const {
+    panelService,
+    hangingProtocolService,
+    xpectriaService: { XpectriaApi },
+    measurementService,
+  } = servicesManager.services;
   const [showLoadingIndicator, setShowLoadingIndicator] = useState(appConfig.showLoadingIndicator);
 
   const hasPanels = useCallback(
@@ -60,6 +65,37 @@ function ViewerLayout({
 
     return { entry, content: entry.component };
   };
+
+  //Fetch Annotations
+
+  useEffect(() => {
+    if (!showLoadingIndicator && measurementService) {
+      XpectriaApi.getMeasurements()
+        .then(data => {
+          const source = measurementService.getSource('Cornerstone3DTools', '0.1');
+          const mappings = measurementService.getSourceMappings('Cornerstone3DTools', '0.1');
+          if (!mappings || !source) {
+            return;
+          }
+
+          data.forEach(dbAnnotation => {
+            const { toolName: annotationType } = dbAnnotation;
+            const matchingMapping = mappings.find(m => m.annotationType === annotationType);
+            if (matchingMapping) {
+              measurementService.addRawMeasurement(
+                source,
+                annotationType,
+                dbAnnotation,
+                matchingMapping.toMeasurementSchema
+              );
+            }
+          });
+        })
+        .catch(error => {
+          console.log(error);
+        });
+    }
+  }, [showLoadingIndicator, measurementService, XpectriaApi]);
 
   useEffect(() => {
     const { unsubscribe } = hangingProtocolService.subscribe(

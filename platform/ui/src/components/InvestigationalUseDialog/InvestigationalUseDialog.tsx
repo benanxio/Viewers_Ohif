@@ -79,7 +79,7 @@ const InvestigationalUseDialog = ({
                 className="text-primary-active cursor-pointer"
                 onClick={() => window.open('https://ohif.org/', '_blank')}
               >
-                Learn more about OHIF Viewer
+                Learn more About Xpectria Viewer
               </span>
             </div>
           </div>
