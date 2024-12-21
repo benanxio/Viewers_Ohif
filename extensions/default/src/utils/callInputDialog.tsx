@@ -139,6 +139,7 @@ export function showLabelAnnotationPopup(measurement, uiDialogService, labelConf
       id: 'select-annotation',
       isDraggable: false,
       showOverlay: true,
+      centralize: true,
       content: LabellingFlow,
       defaultPosition: {
         x: window.innerWidth / 2,

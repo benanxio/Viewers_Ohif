@@ -1,7 +1,6 @@
 import React, { useState, createContext, useContext, useEffect, useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { useTranslation } from 'react-i18next';
-import { XpectriaService } from '@ohif/core';
 
 const XpectriaContext = createContext(null);
 const { Provider } = XpectriaContext;

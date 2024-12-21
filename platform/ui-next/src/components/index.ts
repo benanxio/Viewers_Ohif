@@ -79,6 +79,7 @@ import { StudySummary } from './StudySummary';
 import { ErrorBoundary } from './Errorboundary';
 import { Header } from './Header';
 import { Card, CardHeader, CardFooter, CardTitle, CardDescription, CardContent } from './Card';
+import { PdfReportContent } from './PdfReportContent';
 
 export {
   ErrorBoundary,
@@ -183,4 +184,5 @@ export {
   CardTitle,
   CardDescription,
   CardContent,
+  PdfReportContent,
 };

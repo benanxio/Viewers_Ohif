@@ -303,6 +303,7 @@ const SidePanel = ({
 
   const getTabGridComponent = () => {
     const numCols = getNumGridColumns(tabs.length, gridWidth);
+    console.log({ tabs });
 
     return (
       <>
@@ -310,7 +311,7 @@ const SidePanel = ({
         <div
           className={classnames('flex grow', side === 'right' ? 'justify-start' : 'justify-end')}
         >
-          <div className={classnames('bg-primary-dark text-primary-active flex flex-wrap')}>
+          <div className={classnames('bg-primary-main text-primary-active flex flex-wrap')}>
             {tabs.map((tab, tabIndex) => {
               const { disabled } = tab;
               return (
@@ -392,7 +393,7 @@ const SidePanel = ({
       <>
         <div
           className={classnames(
-            'bg-primary-dark flex select-none rounded-t pt-1.5 pb-[2px]',
+            'bg-primary-main flex select-none rounded-t pt-1.5 pb-[2px]',
             !isMobile && 'h-[40px]'
           )}
         >

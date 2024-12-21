@@ -7,9 +7,9 @@ import { useImageViewer, useViewportGrid, Dialog, ButtonEnums } from '@ohif/ui';
 import { StudyBrowser } from '@ohif/ui-next';
 
 import { useTrackedMeasurements } from '../../getContextModule';
-import { Separator } from '@ohif/ui-next';
+import { Separator, PdfReportContent } from '@ohif/ui-next';
 import { PanelStudyBrowserHeader } from '@ohif/extension-default';
-import { useAppConfig } from '@state';
+import { useAppConfig, useCustomContext } from '@state';
 import { defaultActionIcons, defaultViewPresets } from './constants';
 
 const { formatDate, createStudyBrowserTabs } = utils;
@@ -53,6 +53,7 @@ export default function PanelStudyBrowserTracking({
   });
 
   const { t } = useTranslation('Common');
+  const { isMobile } = useCustomContext();
 
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
@@ -97,12 +98,56 @@ export default function PanelStudyBrowserTracking({
   //   setViewPresets(newViewPresets);
   // };
 
+  const handleShowPdfReport = async (pdfInfo: any) => {
+    try {
+      const pdfUrlPromise = xpectriaService.XpectriaApi.getPdfBlob();
+      const noop = () => { };
+      uiDialogService.create({
+        id: 'report-modal',
+        centralize: true,
+        isDraggable: false,
+        showOverlay: true,
+        content: Dialog,
+        defaultPosition: { x: 0, y: 0 },
+        onDrag: noop,
+        onStart: noop,
+        onStop: noop,
+        contentProps: {
+          title: pdfInfo?.description || 'Reporte',
+          body: () => {
+            const onClose = () => uiDialogService.dismiss({ id: 'report-modal' });
+            return (
+              <React.Suspense fallback={<div>Cargando...</div>}>
+                <PdfReportContent
+                  pdfPromise={pdfUrlPromise}
+                  onCloseModal={onClose}
+                  isMobile={isMobile}
+                />
+              </React.Suspense>
+            );
+          },
+          actions: [],
+          onClose: () => uiDialogService.dismiss({ id: 'report-modal' }),
+          onSubmit: async ({ action }) => {
+            switch (action.id) {
+              case 'cancel':
+                uiDialogService.dismiss({ id: 'report-modal' });
+                break;
+            }
+          },
+        },
+      });
+    } catch (error) {
+      console.log('Ocurrió un error al consultar el reporte', error);
+    }
+  };
+
   const onDoubleClickThumbnailHandler = displaySetInstanceUID => {
     if (displaySetInstanceUID.includes('doc')) {
-      console.log(
-        'double click doc',
-        displaySets.find(ds => ds.displaySetInstanceUID === displaySetInstanceUID)
-      );
+      const pdfInfo = displaySets.find(ds => ds.displaySetInstanceUID === displaySetInstanceUID);
+      if (pdfInfo) {
+        handleShowPdfReport(pdfInfo);
+      }
       return;
     }
 
@@ -435,7 +480,7 @@ export default function PanelStudyBrowserTracking({
 
       verifyPdf();
     }
-  }, [displaySets, xpectriaService]);
+  }, [displaySets, xpectriaService.XpectriaApi]);
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {

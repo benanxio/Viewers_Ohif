@@ -80,6 +80,7 @@ import {
   StudySummary,
   ErrorBoundary,
   Header,
+  PdfReportContent,
 } from './components';
 import { DataRow } from './components/DataRow';
 
@@ -173,4 +174,5 @@ export {
   TooltipContent,
   StudySummary,
   Header,
+  PdfReportContent,
 };

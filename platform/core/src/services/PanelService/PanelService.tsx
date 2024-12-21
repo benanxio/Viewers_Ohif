@@ -169,7 +169,7 @@ export default class PanelService extends PubSubService {
     const panels = this._panelsGroups.get(position) ?? [];
 
     // Return a new array to preserve the internal state
-    return [...panels];
+    return [...panels.filter(pn => pn.iconLabel !== 'Segmentation')];
   }
 
   public reset(): void {
