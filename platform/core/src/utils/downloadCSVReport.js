@@ -99,7 +99,8 @@ function _createAndDownloadFile(csvContent) {
 
   const link = document.createElement('a');
   link.setAttribute('href', encodedUri);
-  link.setAttribute('download', 'MeasurementReport.csv');
+  // link.setAttribute('download', 'MeasurementReport.csv');
+  link.setAttribute('download', 'ReporteMediciones.csv');
   document.body.appendChild(link);
   link.click();
 }

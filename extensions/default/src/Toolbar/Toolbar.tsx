@@ -15,22 +15,43 @@ export function Toolbar({ servicesManager, buttonSection = 'primary', isMobile =
   });
   const { isAuthorized } = getUrlParams();
 
-  const filterButtons = useMemo(
-    () =>
-      toolbarButtons
-        ? toolbarButtons.filter(tb => {
-          if (tb.id === 'Magnify') {
-            return isMobile;
-          }
-          return (
-            MOBILE_OPTIONS.includes(tb.id) ||
-            (!isMobile && tb.id !== 'Magnify') ||
-            (AUTH_OPTIONS.includes(tb.id) && isAuthorized)
-          );
-        })
-        : [],
-    [isMobile, toolbarButtons, isAuthorized]
-  );
+  const filterButtons = useMemo(() => {
+    if (!toolbarButtons) {
+      return [];
+    }
+
+    return toolbarButtons.filter(tb => {
+      const isMobileOption = MOBILE_OPTIONS.includes(tb.id);
+      const isAuthOption = AUTH_OPTIONS.includes(tb.id);
+
+      // Ocultar 'Magnify' en cualquier caso
+      if (tb.id === 'Magnify') {
+        return isMobile;
+      }
+
+      // Si es móvil
+      if (isMobile) {
+        // Mostrar opciones móviles siempre
+        if (isMobileOption) {
+          return true;
+        }
+        // Mostrar opciones autorizadas solo si está autorizado
+        if (isAuthorized && isAuthOption) {
+          return true;
+        }
+        return false; // Ocultar las demás
+      }
+
+      // Si no es móvil
+      if (isAuthorized) {
+        // Mostrar todas las opciones autorizadas y las no restringidas
+        return true;
+      }
+
+      // Si no está autorizado, ocultar opciones de autorización
+      return !isAuthOption;
+    });
+  }, [isMobile, toolbarButtons, isAuthorized]);
 
   if (!toolbarButtons.length) {
     return null;

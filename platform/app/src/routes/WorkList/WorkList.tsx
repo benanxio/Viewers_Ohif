@@ -282,7 +282,7 @@ function WorkList({
           content: patientName ? (
             <TooltipClipboard>{patientName}</TooltipClipboard>
           ) : (
-            <span className="text-gray-700">(Empty)</span>
+              <span className="text-gray-700">{t('MeasurementTable:(Empty)')}</span>
           ),
           gridCol: 4,
         },
@@ -350,7 +350,7 @@ function WorkList({
             seriesInStudiesMap.has(studyInstanceUid)
               ? seriesInStudiesMap.get(studyInstanceUid).map(s => {
                   return {
-                    description: s.description || '(empty)',
+                    description: s.description || t('MeasurementTable:(Empty)'),
                     seriesNumber: s.seriesNumber ?? '',
                     modality: s.modality || '',
                     instances: s.numSeriesInstances || '',

@@ -68,7 +68,6 @@ const findStudies = (key, value) => {
 function createDicomJSONApi(dicomJsonConfig) {
   const implementation = {
     initialize: async ({ query, url }) => {
-      console.log({ url, query });
       if (!url) {
         // url = query.get('url');
         url = parseURL();

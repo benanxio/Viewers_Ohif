@@ -15,5 +15,9 @@
   "Track measurements for this series?": "¿Seguimiento de las medidas de esta serie?",
   "Non-tracked": "Sin seguimiento",
   "(empty)": "(vacío)",
-  "Export CSV": "Exportar CSV"
+  "Export CSV": "Exportar CSV",
+  "Rename": "Renombrar",
+  "Change Color": "Cambiar color",
+  "Unlock": "Desbloquear",
+  "Lock": "Bloquear"
 }

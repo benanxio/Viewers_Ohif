@@ -101,8 +101,8 @@ function PanelMeasurementTableTracking({
           }
 
           return (
-            <div className="bg-background flex h-9 w-full items-center rounded pr-0.5">
-              <div className="flex space-x-1">
+            <div className="bg-primary-main/20 flex h-9 w-full items-center rounded pr-0.5">
+              <div className="flex w-full items-center justify-center space-x-1">
                 <Button
                   size="sm"
                   variant="ghost"
@@ -121,7 +121,7 @@ function PanelMeasurementTableTracking({
                   <Icons.Download className="h-5 w-5" />
                   <span className="pl-1">CSV</span>
                 </Button>
-                <Button
+                {/* <Button
                   size="sm"
                   variant="ghost"
                   className="pl-0.5"
@@ -145,7 +145,7 @@ function PanelMeasurementTableTracking({
                 >
                   <Icons.Delete />
                   Delete All
-                </Button>
+                </Button> */}
               </div>
             </div>
           );

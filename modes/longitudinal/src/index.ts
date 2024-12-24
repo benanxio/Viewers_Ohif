@@ -104,6 +104,7 @@ function modeFactory({ modeConfiguration }) {
       toolbarService.addButtons([...toolbarButtons, ...moreTools]);
       toolbarService.createButtonSection('primary', [
         'MeasurementTools',
+        'Magnify',
         'Zoom',
         'Pan',
         'TrackballRotate',

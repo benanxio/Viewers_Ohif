@@ -8,6 +8,7 @@ import {
 } from '../../components/DropdownMenu';
 import { Icons } from '../../components/Icons/Icons';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../../components/Tooltip/Tooltip';
+import { useTranslation } from 'react-i18next';
 
 /**
  * DataRow is a complex UI component that displays a selectable, interactive row with hierarchical data.
@@ -95,6 +96,7 @@ const DataRow: React.FC<DataRowProps> = ({
   isVisible = true,
   disableEditing = false,
 }) => {
+  const { t } = useTranslation('MeasurementTable');
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const isTitleLong = title?.length > 25;
 
@@ -184,7 +186,7 @@ const DataRow: React.FC<DataRowProps> = ({
     <div className={`flex flex-col ${isVisible ? '' : 'opacity-60'}`}>
       <div
         className={`flex items-center ${
-          isSelected ? 'bg-popover' : 'bg-muted'
+          isSelected ? 'bg-primary-main/80' : 'bg-primary-main/50'
         } group relative cursor-pointer`}
         onClick={onSelect}
         data-cy="data-row"
@@ -195,7 +197,7 @@ const DataRow: React.FC<DataRowProps> = ({
         {/* Number Box */}
         <div
           className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base ${
-            isSelected ? 'bg-highlight text-black' : 'bg-muted text-muted-foreground'
+            isSelected ? 'bg-primary-main text-black' : 'bg-primary-main/50 text-white'
           } overflow-hidden`}
         >
           {number}
@@ -218,7 +220,7 @@ const DataRow: React.FC<DataRowProps> = ({
               <TooltipTrigger asChild>
                 <span
                   className={`cursor-default text-base ${
-                    isSelected ? 'text-highlight' : 'text-muted-foreground'
+                    isSelected ? 'text-white' : 'text-white/80'
                   } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
                 >
                   {title}
@@ -234,7 +236,7 @@ const DataRow: React.FC<DataRowProps> = ({
           ) : (
             <span
               className={`text-base ${
-                isSelected ? 'text-highlight' : 'text-muted-foreground'
+                  isSelected ? 'text-white' : 'text-white/80'
               } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
             >
               {title}
@@ -283,23 +285,23 @@ const DataRow: React.FC<DataRowProps> = ({
                 <>
                   <DropdownMenuItem onClick={e => handleAction('Rename', e)}>
                     <Icons.Rename className="text-foreground" />
-                    <span className="pl-2">Rename</span>
+                    <span className="pl-2">{t('Rename')}</span>
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={e => handleAction('Delete', e)}>
                     <Icons.Delete className="text-foreground" />
-                    <span className="pl-2">Delete</span>
+                    <span className="pl-2">{t('Delete')}</span>
                   </DropdownMenuItem>
                   {onColor && (
                     <DropdownMenuItem onClick={e => handleAction('Color', e)}>
                       <Icons.ColorChange className="text-foreground" />
-                      <span className="pl-2">Change Color</span>
+                      <span className="pl-2">{t('Change Color')}</span>
                     </DropdownMenuItem>
                   )}
                 </>
               )}
               <DropdownMenuItem onClick={e => handleAction('Lock', e)}>
                 <Icons.Lock className="text-foreground" />
-                <span className="pl-2">{isLocked ? 'Unlock' : 'Lock'}</span>
+                <span className="pl-2">{t(isLocked ? 'Unlock' : 'Lock')}</span>
               </DropdownMenuItem>
             </DropdownMenuContent>
           </DropdownMenu>

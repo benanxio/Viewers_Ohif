@@ -129,11 +129,6 @@ class AsyncEndpoints {
   }
 
   async getMeasurements() {
-    if (!this.isAuthorized) {
-      console.error('User is not authorized');
-      return;
-    }
-
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 5000);

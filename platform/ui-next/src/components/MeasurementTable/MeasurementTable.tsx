@@ -108,6 +108,7 @@ interface RowProps {
 }
 
 const Row = ({ item, index }: RowProps) => {
+  const { t } = useTranslation('MeasurementTable');
   const {
     onClick,
     onDelete,
@@ -121,9 +122,9 @@ const Row = ({ item, index }: RowProps) => {
   return (
     <DataRow
       key={item.uid}
-      description={item.label}
+      description={t(item.label)}
       number={index + 1}
-      title={item.label}
+      title={t(item.label)}
       colorHex={item.colorHex}
       isSelected={item.isSelected}
       details={item.displayText}
