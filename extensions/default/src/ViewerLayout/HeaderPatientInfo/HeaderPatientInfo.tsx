@@ -53,7 +53,7 @@ function HeaderPatientInfo({ servicesManager, appConfig, isMobile = false }: wit
           className={classNames('text-primary-active', { hidden: isMobile })}
         />
       ) : (
-          <Icons.Patient className={classNames('text-primary-active', { hidden: isMobile })} />
+        <Icons.Patient className={classNames('text-primary-active', { hidden: isMobile })} />
       )}
       <div className="flex flex-col justify-center">
         {expanded ? (
@@ -79,17 +79,11 @@ function HeaderPatientInfo({ servicesManager, appConfig, isMobile = false }: wit
           </>
         ) : (
           <div className="text-primary-active self-center text-[13px]">
-              {isMixedPatients ? t('Multiple Patients') : t('Patient')}
+            {isMixedPatients ? t('Multiple Patients') : t('Patient')}
           </div>
         )}
       </div>
-      <Icons.ChevronPatient
-        className={classNames(
-          'text-primary-active',
-          { hidden: isMobile },
-          { 'rotate-180': expanded }
-        )}
-      />
+      <Icons.ArrowLeft className={classNames('text-primary-active', expanded ? 'rotate-180' : '', { hidden: isMobile })} />
     </div>
   );
 }

@@ -75,7 +75,12 @@ function Header({
         <div className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 transform">
           <div className="flex items-center justify-center space-x-2">{children}</div>
         </div>
-        <div className="absolute right-0 top-1/2 flex -translate-y-1/2 select-none items-center">
+        <div
+          className={classNames(
+            'absolute right-0 top-1/2 -translate-y-1/2 select-none items-center',
+            props.isMobile ? 'hidden' : 'flex'
+          )}
+        >
           {PatientInfo}
           <div className="border-primary-main mx-1.5 h-[25px] border-r"></div>
           <div className="hidden flex-shrink-0">
@@ -102,7 +107,7 @@ function Header({
                     >
                       {IconComponent && (
                         <span className="flex h-4 w-4 items-center justify-center">
-                          <IconComponent className="h-full w-full" />
+                          <Icons.ByName name={IconComponent.name} />
                         </span>
                       )}
                       <span className="flex-1">{option.title}</span>

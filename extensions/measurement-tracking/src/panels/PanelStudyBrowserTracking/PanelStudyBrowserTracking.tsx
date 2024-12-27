@@ -101,7 +101,7 @@ export default function PanelStudyBrowserTracking({
   const handleShowPdfReport = async (pdfInfo: any) => {
     try {
       const pdfUrlPromise = xpectriaService.XpectriaApi.getPdfBlob();
-      const noop = () => { };
+      const noop = () => {};
       uiDialogService.create({
         id: 'report-modal',
         centralize: true,
@@ -475,7 +475,7 @@ export default function PanelStudyBrowserTracking({
             setDisplaySets(prevSets => [newDocSet, ...prevSets]);
             setDocVerify(false);
           }
-        } catch (error) { }
+        } catch (error) {}
       };
 
       verifyPdf();
@@ -627,7 +627,7 @@ export default function PanelStudyBrowserTracking({
         }}
         // onClickThumbnail={() => {}}
         onClickThumbnail={onDoubleClickThumbnailHandler}
-        onDoubleClickThumbnail={() => { }}
+        onDoubleClickThumbnail={() => {}}
         activeDisplaySetInstanceUIDs={activeViewportDisplaySetInstanceUIDs}
         showSettings={actionIcons.find(icon => icon.id === 'settings').value}
         viewPresets={viewPresets}

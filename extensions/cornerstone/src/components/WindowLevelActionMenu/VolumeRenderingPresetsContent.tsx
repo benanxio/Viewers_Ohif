@@ -1,5 +1,5 @@
-import { Icon } from '@ohif/ui';
 import { ButtonEnums } from '@ohif/ui';
+import { Icons } from '@ohif/ui-next';
 import React, { ReactElement, useState, useCallback } from 'react';
 import { Button, InputFilterText } from '@ohif/ui';
 import { ViewportPreset, VolumeRenderingPresetsContentProps } from '../../types/ViewportPresets';
@@ -68,7 +68,7 @@ export function VolumeRenderingPresetsContent({
                   handleApply({ preset: preset.name, viewportId });
                 }}
               >
-                <Icon
+                <Icons.ByName
                   name={preset.name}
                   className={classNames(
                     'h-[150px] w-[190px] max-w-none rounded border-2',

@@ -211,7 +211,7 @@ const Thumbnail = ({
               <Tooltip>
                 <TooltipTrigger>
                   <div className="group">
-                    <Icons.StatusTracking className="h-4 w-4 cursor-pointer text-green-600" />
+                    <Icons.StatusTracking className="h-5 w-5 cursor-pointer text-green-600" />
                   </div>
                 </TooltipTrigger>
                 <TooltipContent side="right">

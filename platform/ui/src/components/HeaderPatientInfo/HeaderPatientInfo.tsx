@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import PropTypes from 'prop-types';
-import { Icon } from '@ohif/ui';
 import { utils } from '@ohif/core';
+import { Icons } from '@ohif/ui-next';
 import { PatientInfoVisibility } from '../../types';
 import classNames from 'classnames';
 
@@ -122,7 +122,7 @@ function HeaderPatientInfo({ servicesManager, appConfig, isMobile = false }: wit
       )}
       onClick={handleOnClick}
     >
-      <Icon
+      <Icons.ByName
         name={isMixedPatients ? 'icon-multiple-patients' : 'icon-patient'}
         className={classNames('text-primary-active', { hidden: isMobile })}
       />
@@ -156,10 +156,7 @@ function HeaderPatientInfo({ servicesManager, appConfig, isMobile = false }: wit
         )}
       </div>
       {!isMobile && (
-        <Icon
-          name="icon-chevron-patient"
-          className={`text-primary-active ${expanded ? 'rotate-180' : ''}`}
-        />
+        <Icons.ArrowLeft className={`text-primary-active ${expanded ? 'rotate-180' : ''}`} />
       )}
     </div>
   );

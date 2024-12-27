@@ -112,7 +112,7 @@ export function WindowLevelActionMenu({
 
   return (
     <AllInOneMenu.IconMenu
-      icon="customViewportWindowLevel"
+      icon="CustomViewportWindowLevel"
       verticalDirection={verticalDirection}
       horizontalDirection={horizontalDirection}
       iconClassName={classNames(

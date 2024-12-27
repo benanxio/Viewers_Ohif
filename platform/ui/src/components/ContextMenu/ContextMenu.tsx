@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import Typography from '../Typography';
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 import { useTranslation } from 'react-i18next';
 
 const ContextMenu = ({ items, ...props }) => {
@@ -25,7 +25,7 @@ const ContextMenu = ({ items, ...props }) => {
         >
           <Typography>{t(item.label)}</Typography>
           {item.iconRight && (
-            <Icon
+            <Icons.ByName
               name={item.iconRight}
               className="inline"
             />

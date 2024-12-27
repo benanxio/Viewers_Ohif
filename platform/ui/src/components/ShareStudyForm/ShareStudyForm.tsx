@@ -1,7 +1,7 @@
 import React from 'react';
 import Input from '../Input';
 import IconButton from '../IconButton';
-import Icon from '../Icon';
+import { Icons } from '@ohif/ui-next';
 import Button, { ButtonEnums } from '../Button';
 
 function ShareStudyForm({ onClose = () => { } }: { onClose: () => void }) {
@@ -30,8 +30,7 @@ function ShareStudyForm({ onClose = () => { } }: { onClose: () => void }) {
           className="hover:bg-secondary-active h-[40px] w-[40px] rounded-[4px]"
           onClick={handleCopyToClipboard}
         >
-          <Icon
-            name="ClipBoardIcon"
+          <Icons.ClipBoardIcon
             color="primary"
             className="cursor-pointer text-white"
           />

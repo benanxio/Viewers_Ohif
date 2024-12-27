@@ -218,7 +218,7 @@ const toolbarButtons: Button[] = [
     id: 'Report',
     uiType: 'ohif.radioGroup',
     props: {
-      icon: 'iconReport',
+      icon: 'ReportIcon',
       label: 'Crear Reporte',
       commands: 'createReportTab',
       evaluate: 'evaluate.action',

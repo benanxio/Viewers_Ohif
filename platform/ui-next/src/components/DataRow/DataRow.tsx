@@ -9,6 +9,7 @@ import {
 import { Icons } from '../../components/Icons/Icons';
 import { Tooltip, TooltipTrigger, TooltipContent } from '../../components/Tooltip/Tooltip';
 import { useTranslation } from 'react-i18next';
+import classNames from 'classnames';
 
 /**
  * DataRow is a complex UI component that displays a selectable, interactive row with hierarchical data.
@@ -185,9 +186,8 @@ const DataRow: React.FC<DataRowProps> = ({
   return (
     <div className={`flex flex-col ${isVisible ? '' : 'opacity-60'}`}>
       <div
-        className={`flex items-center ${
-          isSelected ? 'bg-primary-main/80' : 'bg-primary-main/50'
-        } group relative cursor-pointer`}
+        className={`flex items-center ${isSelected ? 'bg-primary-main/80' : 'bg-primary-main/50'
+          } group relative cursor-pointer`}
         onClick={onSelect}
         data-cy="data-row"
       >
@@ -196,9 +196,11 @@ const DataRow: React.FC<DataRowProps> = ({
 
         {/* Number Box */}
         <div
-          className={`flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base ${
-            isSelected ? 'bg-primary-main text-black' : 'bg-primary-main/50 text-white'
-          } overflow-hidden`}
+          className={classNames(
+            'flex h-7 max-h-7 w-7 flex-shrink-0 items-center justify-center rounded-l border-r border-black text-base',
+            isSelected ? 'bg-primary-main text-white' : 'bg-primary-main/70 text-white/70',
+            'overflow-hidden'
+          )}
         >
           {number}
         </div>
@@ -219,9 +221,8 @@ const DataRow: React.FC<DataRowProps> = ({
             <Tooltip>
               <TooltipTrigger asChild>
                 <span
-                  className={`cursor-default text-base ${
-                    isSelected ? 'text-white' : 'text-white/80'
-                  } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
+                  className={`cursor-default text-base ${isSelected ? 'text-white' : 'text-white/80'
+                    } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
                 >
                   {title}
                 </span>
@@ -235,9 +236,8 @@ const DataRow: React.FC<DataRowProps> = ({
             </Tooltip>
           ) : (
             <span
-              className={`text-base ${
-                  isSelected ? 'text-white' : 'text-white/80'
-              } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
+                className={`text-base ${isSelected ? 'text-white' : 'text-white/80'
+                  } [overflow:hidden] [display:-webkit-box] [-webkit-line-clamp:2] [-webkit-box-orient:vertical]`}
             >
               {title}
             </span>
@@ -250,9 +250,8 @@ const DataRow: React.FC<DataRowProps> = ({
           <Button
             size="icon"
             variant="ghost"
-            className={`h-6 w-6 transition-opacity ${
-              isSelected || !isVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-            }`}
+            className={`h-6 w-6 transition-opacity ${isSelected || !isVisible ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+              }`}
             aria-label={isVisible ? 'Hide' : 'Show'}
             onClick={e => {
               e.stopPropagation();
@@ -271,9 +270,8 @@ const DataRow: React.FC<DataRowProps> = ({
               <Button
                 size="icon"
                 variant="ghost"
-                className={`h-6 w-6 transition-opacity ${
-                  isSelected || isDropdownOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
-                }`}
+                className={`h-6 w-6 transition-opacity ${isSelected || isDropdownOpen ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                  }`}
                 aria-label="Actions"
                 onClick={e => e.stopPropagation()} // Prevent row selection on button click
               >
