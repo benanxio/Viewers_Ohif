@@ -135,7 +135,10 @@ export default async function init({
     'cornerstoneStreamingDynamicImageVolume',
     cornerstoneStreamingDynamicImageVolumeLoader
   );
-
+  hangingProtocolService.registerImageLoadStrategy('interleaveCenter', interleaveCenterLoader);
+  hangingProtocolService.registerImageLoadStrategy('interleaveTopToBottom', interleaveTopToBottom);
+  hangingProtocolService.registerImageLoadStrategy('nth', nthLoader);
+  /*
   // Register strategies using the wrapper
   const imageLoadStrategies = {
     interleaveCenter: interleaveCenterLoader,
@@ -143,13 +146,14 @@ export default async function init({
     nth: nthLoader,
   };
 
+
   Object.entries(imageLoadStrategies).forEach(([name, strategyFn]) => {
     hangingProtocolService.registerImageLoadStrategy(
       name,
       createMetadataWrappedStrategy(strategyFn)
     );
   });
-
+*/
   // ... existing code ...
 
   // add metadata providers
@@ -309,11 +313,12 @@ function initializeWebWorkerProgressHandler(uiNotificationService) {
   });
 }
 
-/**
+/*
  * Creates a wrapped image load strategy with metadata handling
  * @param strategyFn - The image loading strategy function to wrap
  * @returns A wrapped strategy function that handles metadata configuration
  */
+/*
 const createMetadataWrappedStrategy = (strategyFn: (args: any) => any) => {
   return (args: any) => {
     const clonedConfig = imageRetrieveMetadataProvider.clone();
@@ -330,7 +335,7 @@ const createMetadataWrappedStrategy = (strategyFn: (args: any) => any) => {
     }
   };
 };
-
+*/
 function CPUModal() {
   return (
     <div>

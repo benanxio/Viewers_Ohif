@@ -266,7 +266,17 @@ export default class DisplaySetService extends PubSubService {
   public makeDisplaySetForInstances(instancesSrc: InstanceMetadata[], settings): DisplaySet[] {
     // creating a sopClassUID list and for each sopClass associate its respective
     // instance list
+    if (!instancesSrc || !Array.isArray(instancesSrc) || instancesSrc.length === 0) {
+      return [];
+    }
     const instancesForSetSOPClasses = instancesSrc.reduce((sopClassList, instance) => {
+      if (!instance.SOPClassUID) {
+        return sopClassList;
+      }
+      // Asignar valores predeterminados si faltan
+      instance.ImagePositionPatient = instance.ImagePositionPatient || [0, 0, 0];
+      instance.ImageOrientationPatient = instance.ImageOrientationPatient || [1, 0, 0, 0, 1, 0];
+
       if (!(instance.SOPClassUID in sopClassList)) {
         sopClassList[instance.SOPClassUID] = [];
       }
@@ -283,7 +293,9 @@ export default class DisplaySetService extends PubSubService {
         instancesForSetSOPClasses[sopClass],
         settings
       );
-      allDisplaySets = [...allDisplaySets, ...displaySets];
+      if (Array.isArray(displaySets)) {
+        allDisplaySets = [...allDisplaySets, ...displaySets];
+      }
     });
     return allDisplaySets;
   }
