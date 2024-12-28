@@ -162,9 +162,10 @@ export default function PanelStudyBrowserTracking({
     } catch (error) {
       console.warn(error);
       uiNotificationService.show({
-        title: 'Thumbnail Double Click',
-        message:
-          'The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.',
+        title: t('Notification:Thumbnail Click'),
+        message: t(
+          'Notification:The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.'
+        ),
         type: 'error',
         duration: 3000,
       });

@@ -17,6 +17,7 @@
   "Failed to store measurements": "Error al guardar las mediciones",
   "Save": "Guardar",
   "Thumbnail Double Click": "Doble clic en la miniatura",
+  "Thumbnail Click": "Clic en la miniatura",
   "The selected display sets could not be added to the viewport.": "No se pudieron agregar los conjuntos de visualización seleccionados a la ventana de visualización.",
   "The selected display sets could not be added to the viewport due to a mismatch in the Hanging Protocol rules.": "No se pudieron agregar los conjuntos de visualización seleccionados a la ventana de visualización debido a una discrepancia en las reglas del protocolo de colgado.",
   "Please wait for the current series to finish loading.": "Por favor espere a que la serie actual termine de cargarse.",
