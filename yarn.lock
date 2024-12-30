@@ -4006,10 +4006,10 @@
   resolved "https://registry.yarnpkg.com/@juggle/resize-observer/-/resize-observer-3.4.0.tgz#08d6c5e20cf7e4cc02fd181c4b0c225cd31dbb60"
   integrity sha512-dfLbk+PwWvFzSxwk3n5ySL0hfBog779o8h68wK/7/APo/7cgyWp5jcXockbxdk5kFRkbeXWm4Fbi9FrdN381sA==
 
-"@kitware/vtk.js@32.1.1":
-  version "32.1.1"
-  resolved "https://registry.yarnpkg.com/@kitware/vtk.js/-/vtk.js-32.1.1.tgz#20179cb5f65f33dea4626a948afe24eb16364f8a"
-  integrity sha512-rrh+PvmjpMDCOsgr7B8ZVxnF75TXjUJOVleMO5QJFh7DP+31927l9DJA4WRiJU7mbpYuZGt8/vAojO5fCizUkA==
+"@kitware/vtk.js@32.1.1", "@kitware/vtk.js@npm:vtk.js-custom-jhonny@32.8.1-custom.8t ":
+  version "32.8.1-custom.8t"
+  resolved "https://registry.yarnpkg.com/vtk.js-custom-jhonny/-/vtk.js-custom-jhonny-32.8.1-custom.8t.tgz#8b733468c0923965a8f476c0aa030846ed8b7b22"
+  integrity sha512-vPs7IfMBjsmfV/tDZ9tbe2g4lgDF6Yy01dG1xocmAEQBJfisxnEEYY6dXeWNGMKYgnFEAwZHtHDIvTHoE3RNaQ==
   dependencies:
     "@babel/runtime" "7.22.11"
     "@types/webxr" "^0.5.5"
@@ -4024,6 +4024,7 @@
     shelljs "0.8.5"
     spark-md5 "3.0.2"
     stream-browserify "3.0.0"
+    utif "3.1.0"
     webworker-promise "0.5.0"
     worker-loader "3.0.8"
     xmlbuilder2 "3.0.2"
@@ -18953,6 +18954,11 @@ pacote@^15.2.0:
     ssri "^10.0.0"
     tar "^6.1.11"
 
+pako@^1.0.5:
+  version "1.0.11"
+  resolved "https://registry.yarnpkg.com/pako/-/pako-1.0.11.tgz#6c9599d340d54dfd3946380252a35705a6b992bf"
+  integrity sha512-4hLB8Py4zZce5s4yd9XzopqwVv/yGNhV1Bl8NTmCq1763HeK2+EwVTv+leGeL13Dnh2wfbqowVPXCIO0z4taYw==
+
 pako@^2.0.4:
   version "2.1.0"
   resolved "https://registry.yarnpkg.com/pako/-/pako-2.1.0.tgz#266cc37f98c7d883545d11335c00fbd4062c9a86"
@@ -24252,6 +24258,13 @@ use-sync-external-store@1.2.2, use-sync-external-store@^1.0.0:
   version "1.2.2"
   resolved "https://registry.yarnpkg.com/use-sync-external-store/-/use-sync-external-store-1.2.2.tgz#c3b6390f3a30eba13200d2302dcdf1e7b57b2ef9"
   integrity sha512-PElTlVMwpblvbNqQ82d2n6RjStvdSoNe9FG28kNfz3WiXilJm4DdNkEzRhCZuIDwY8U08WVihhGR5iRqAwfDiw==
+
+utif@3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/utif/-/utif-3.1.0.tgz#4abec2f5d9cafe7813c0191e007927c125401f1c"
+  integrity sha512-WEo4D/xOvFW53K5f5QTaTbbiORcm2/pCL9P6qmJnup+17eYfKaEhDeX9PeQkuyEoIxlbGklDuGl8xwuXYMrrXQ==
+  dependencies:
+    pako "^1.0.5"
 
 util-deprecate@^1.0.1, util-deprecate@^1.0.2, util-deprecate@~1.0.1:
   version "1.0.2"

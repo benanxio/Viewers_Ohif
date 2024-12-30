@@ -101,6 +101,7 @@
   },
   "resolutions": {
     "**/@babel/runtime": "^7.20.13",
+    "@kitware/vtk.js": "npm:vtk.js-custom-jhonny@32.8.1-custom.8t ",
     "commander": "8.3.0",
     "dcmjs": ">=0.33.0",
     "dicomweb-client": ">=0.10.4",
