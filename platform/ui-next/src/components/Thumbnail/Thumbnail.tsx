@@ -57,9 +57,24 @@ const Thumbnail = ({
   const isDoc = modality === 'DOC';
 
   const [lastTap, setLastTap] = useState(0);
+  const [isScrolling, setIsScrolling] = useState(false);
+
+  const handleTouchStart = () => {
+    setIsScrolling(false);
+  };
+
+  const handleTouchMove = () => {
+    setIsScrolling(true);
+  };
+
   const handleTouchEnd = e => {
+    if (isScrolling) {
+      return;
+    }
+
     const currentTime = new Date().getTime();
     const tapLength = currentTime - lastTap;
+
     if (tapLength < 300 && tapLength > 0) {
       onDoubleClick(e);
     } else {
@@ -384,6 +399,8 @@ const Thumbnail = ({
       data-series={seriesNumber}
       onClick={onClick}
       onDoubleClick={onDoubleClick}
+      onTouchStart={handleTouchStart}
+      onTouchMove={handleTouchMove}
       onTouchEnd={handleTouchEnd}
       role="button"
     >

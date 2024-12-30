@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { useLocation } from 'react-router';
+//import { useLocation } from 'react-router';
 
 import { UserPreferences, AboutModal, useModal } from '@ohif/ui';
 import { Header } from '@ohif/ui-next';
@@ -21,30 +21,31 @@ function ViewerHeader({
   isMobile = false,
 }: withAppTypes<{ appConfig: AppTypes.Config }>) {
   const navigate = useNavigate();
-  const location = useLocation();
+  //const location = useLocation();
 
   const onClickReturnButton = () => {
-    const { pathname } = location;
-    const dataSourceIdx = pathname.indexOf('/', 1);
-    const query = new URLSearchParams(window.location.search);
-    const configUrl = query.get('configUrl');
+    window.location.href = 'https://pacs.xpectria.com';
+    // const { pathname } = location;
+    // const dataSourceIdx = pathname.indexOf('/', 1);
+    // const query = new URLSearchParams(window.location.search);
+    // const configUrl = query.get('configUrl');
 
-    const dataSourceName = pathname.substring(dataSourceIdx + 1);
-    const existingDataSource = extensionManager.getDataSources(dataSourceName);
+    // const dataSourceName = pathname.substring(dataSourceIdx + 1);
+    // const existingDataSource = extensionManager.getDataSources(dataSourceName);
 
-    const searchQuery = new URLSearchParams();
-    if (dataSourceIdx !== -1 && existingDataSource) {
-      searchQuery.append('datasources', pathname.substring(dataSourceIdx + 1));
-    }
+    // const searchQuery = new URLSearchParams();
+    // if (dataSourceIdx !== -1 && existingDataSource) {
+    //   searchQuery.append('datasources', pathname.substring(dataSourceIdx + 1));
+    // }
 
-    if (configUrl) {
-      searchQuery.append('configUrl', configUrl);
-    }
+    // if (configUrl) {
+    //   searchQuery.append('configUrl', configUrl);
+    // }
 
-    navigate({
-      pathname: '/',
-      search: decodeURIComponent(searchQuery.toString()),
-    });
+    // navigate({
+    //   pathname: '/',
+    //   search: decodeURIComponent(searchQuery.toString()),
+    // });
   };
 
   const { t } = useTranslation();
