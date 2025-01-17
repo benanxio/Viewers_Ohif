@@ -1,4 +1,5 @@
 import { ButtonEnums } from '@ohif/ui';
+import i18n from 'i18next';
 
 const RESPONSE = {
   NO_NEVER: -1,
@@ -36,21 +37,23 @@ function promptTrackNewSeries({ servicesManager, extensionManager }, ctx, evt) {
 
 function _askShouldAddMeasurements(uiViewportDialogService, viewportId) {
   return new Promise(function (resolve, reject) {
-    const message = 'Do you want to add this measurement to the existing report?';
+    const message = i18n.t(
+      'Notification:Do you want to add this measurement to the existing report?'
+    );
     const actions = [
       {
         type: ButtonEnums.type.secondary,
-        text: 'Cancel',
+        text: i18n.t('Notification:Cancel'),
         value: RESPONSE.CANCEL,
       },
       {
         type: ButtonEnums.type.primary,
-        text: 'Create new report',
+        text: i18n.t('Notification:Create new report'),
         value: RESPONSE.CREATE_REPORT,
       },
       {
         type: ButtonEnums.type.primary,
-        text: 'Add to existing report',
+        text: i18n.t('Notification:Add to existing report'),
         value: RESPONSE.ADD_SERIES,
       },
     ];

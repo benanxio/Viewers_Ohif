@@ -44,7 +44,7 @@ const locizeOptions = {
 
 const envUseLocize = !!process.env.USE_LOCIZE;
 const envApiKeyAvailable = !!process.env.LOCIZE_API_KEY;
-const ORIGINAL_DEFAULT_LANGUAGE = 'en-US';
+const ORIGINAL_DEFAULT_LANGUAGE = 'es';
 const DEFAULT_LANGUAGE = 'es';
 
 function initI18n(
@@ -109,7 +109,7 @@ function initI18n(
     initialized = i18n
       // detect user language
       // learn more: https://github.com/i18next/i18next-browser-languageDetector
-      .use(LanguageDetector)
+      // .use(LanguageDetector)
       // pass the i18n instance to react-i18next.
       .use(initReactI18next)
       // init i18next

@@ -1,7 +1,7 @@
 {
-  "Do you want to add this measurement to the existing report?": "¿Quieres agregar esta medida al informe existente?",
-  "Create new report": "Crear nuevo reporte",
-  "Add to existing report": "Agregar al informe existente",
+  "Do you want to add this measurement to the existing report?": "¿Quieres agregar esta medida a las mediciones existentes?",
+  "Create new report": "Crear otro grupo de mediciones",
+  "Add to existing report": "Agregar a las mediciones existentes",
   "Discard": "Descartar",
   "You have existing tracked measurements. What would you like to do with your existing tracked measurements?": "Tienes mediciones rastreadas existentes. ¿Qué te gustaría hacer con ellas?",
   "No, do not ask again for this series": "No, no volver a preguntar para esta serie",

@@ -1,5 +1,8 @@
 {
   "Clear dates": "Borrar fechas",
-  "End Date": "Fecha fin",
-  "Start Date": "Fecha inicio"
+  "Start Date": "Fecha inicio",
+  "Today": "Hoy",
+  "Last 7 days": "Últimos 7 días",
+  "Last 30 days": "Últimos 30 días",
+  "Close": "Cerrar"
 }

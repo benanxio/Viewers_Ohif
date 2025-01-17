@@ -2,5 +2,7 @@
   "More Measure Tools": "Más herramientas de medición",
   "Not available on the current viewport": "No disponible en la vista actual",
   "Tool not available for this modality": "Herramienta no disponible para este modalidad",
-  "More Tools": "Más herramientas"
+  "More Tools": "Más herramientas",
+  "Select a 3D viewport to enable this tool": "Seleccione una vista 3D para habilitar esta herramienta",
+  "Select an MPR viewport to enable this tool": "Seleccione una vista MPR para habilitar esta herramienta"
 }

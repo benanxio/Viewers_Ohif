@@ -1,6 +1,7 @@
 {
   "Acquired": "Adquirido",
   "Angle": "Ángulo",
+  "Annotation": "Anotación",
   "Axial": "Axial",
   "Bidirectional": "Bidireccional",
   "Brush": "Cepillo",
@@ -49,5 +50,7 @@
   "Calibration": "Calibración",
   "Image Overlay": "Superposición de imágenes",
   "Zoom-in": "Ampliar",
-  "Dicom Tag Browser": "Explorador de etiquetas DICOM"
+  "Dicom Tag Browser": "Explorador de etiquetas DICOM",
+  "3D Rotate": "Giro 3D",
+  "Capture": "Capturar"
 }

@@ -26,7 +26,7 @@ export type CinePlayerProps = {
 };
 
 const fpsButtonClassNames =
-  'cursor-pointer text-primary-active active:text-primary-light hover:bg-customblue-300 w-4 flex items-center justify-center';
+  'cursor-pointer text-primary-active active:text-primary-light hover:bg-primary-light w-4 flex items-center justify-center';
 
 const CinePlayer: React.FC<CinePlayerProps> = ({
   className,
@@ -99,7 +99,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
       >
         <Icons.ByName
           name={getPlayPauseIconName()}
-          className="active:text-primary-light hover:bg-customblue-300 cursor-pointer text-white hover:rounded"
+          className="active:text-primary-light hover:bg-primary-light cursor-pointer text-white hover:rounded"
           onClick={() => onPlayPauseChange(!isPlaying)}
           data-cy={'cine-player-play-pause'}
         />
@@ -142,7 +142,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
             <div className="flex items-center justify-center gap-1">
               <div className="flex-shrink-0 text-center text-sm leading-[22px] text-white">
                 <span className="inline-block text-right">{`${frameRate} `}</span>
-                <span className="text-aqua-pale whitespace-nowrap text-xs">{' FPS'}</span>
+                <span className="text-primary-light whitespace-nowrap text-xs">{' FPS'}</span>
               </div>
             </div>
           </Tooltip>
@@ -156,7 +156,7 @@ const CinePlayer: React.FC<CinePlayerProps> = ({
           </div>
         </div>
         <Icons.Close
-          className="text-primary-active active:text-primary-light hover:bg-customblue-300 cursor-pointer hover:rounded"
+          className="text-primary-active active:text-primary-light hover:bg-primary-light cursor-pointer hover:rounded"
           onClick={onClose}
           data-cy={'cine-player-close'}
         />
