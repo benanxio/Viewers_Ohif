@@ -69,7 +69,11 @@ function ViewerLayout({
   //Fetch Annotations
 
   useEffect(() => {
-    if (!showLoadingIndicator && measurementService) {
+    if (
+      !showLoadingIndicator &&
+      measurementService &&
+      XpectriaApi.memoizedParams?.permissions.view_measurements
+    ) {
       XpectriaApi.getMeasurements()
         .then(data => {
           const source = measurementService.getSource('Cornerstone3DTools', '0.1');
@@ -156,7 +160,7 @@ function ViewerLayout({
       />
       <div
         className="relative flex w-full flex-row flex-nowrap items-stretch overflow-hidden bg-black"
-        style={{ height: 'calc(100vh - 84px' }}
+        style={{ height: 'calc(100dvh - 84px' }}
       >
         <React.Fragment>
           {showLoadingIndicator && <LoadingIndicatorProgress className="h-full w-full bg-black" />}

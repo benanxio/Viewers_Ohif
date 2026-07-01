@@ -18,11 +18,12 @@ export function WindowLevel({
   const { t } = useTranslation('WindowLevelActionMenu');
 
   const onSetWindowLevel = useCallback(
-    props => {
+    (preset: WindowLevelPreset) => {
       commandsManager.run({
         commandName: 'setViewportWindowLevel',
         commandOptions: {
-          ...props,
+          ...preset,
+          presetName: preset.description,
           viewportId,
         },
         context: 'CORNERSTONE',

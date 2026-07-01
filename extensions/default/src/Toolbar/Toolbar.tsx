@@ -13,7 +13,7 @@ export function Toolbar({ servicesManager, buttonSection = 'primary', isMobile =
     servicesManager,
     buttonSection,
   });
-  const { isAuthorized } = getUrlParams();
+  const { permissions } = getUrlParams();
 
   const filterButtons = useMemo(() => {
     if (!toolbarButtons) {
@@ -36,14 +36,14 @@ export function Toolbar({ servicesManager, buttonSection = 'primary', isMobile =
           return true;
         }
         // Mostrar opciones autorizadas solo si está autorizado
-        if (isAuthorized && isAuthOption) {
+        if (permissions.perform_measurements && isAuthOption) {
           return true;
         }
         return false; // Ocultar las demás
       }
 
       // Si no es móvil
-      if (isAuthorized) {
+      if (permissions.perform_measurements) {
         // Mostrar todas las opciones autorizadas y las no restringidas
         return true;
       }
@@ -51,7 +51,7 @@ export function Toolbar({ servicesManager, buttonSection = 'primary', isMobile =
       // Si no está autorizado, ocultar opciones de autorización
       return !isAuthOption;
     });
-  }, [isMobile, toolbarButtons, isAuthorized]);
+  }, [isMobile, toolbarButtons, permissions]);
 
   if (!toolbarButtons.length) {
     return null;

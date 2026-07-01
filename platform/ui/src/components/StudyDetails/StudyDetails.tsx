@@ -73,7 +73,7 @@ const StudyDetails: React.FC<{
           <strong>{t('Capture')}:</strong> {patientInfo.StudyCapture}
         </p>
         <p>
-          <strong>{t('Organization')}:</strong> {params.client.replace(/-/g, ' ')}
+          <strong>{t('Organization')}:</strong> {params.clientAlias.replace(/-/g, ' ')}
         </p>
         <p>
           <strong>{t('Branch')}:</strong> {params.sede.replace(/-/g, ' ')}

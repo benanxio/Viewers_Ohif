@@ -1,4 +1,4 @@
-import { getUrlParams } from '../../utils';
+import { getUrlParams, GetUrlParamsReturn } from '../../utils';
 const removePointsTools = ['EllipticalROI', 'RectangleROI', 'CircleROI'];
 
 interface pdfDataProps {
@@ -7,8 +7,14 @@ interface pdfDataProps {
 }
 
 class AsyncEndpoints {
-  public memoizedParams = null;
-  public isAuthorized: boolean = false;
+  public memoizedParams: GetUrlParamsReturn | null = null;
+  public permissions: GetUrlParamsReturn['permissions'] = {
+    view_measurements: false,
+    perform_measurements: false,
+    save_measurements: false,
+    view_report: false,
+    edit_report: false,
+  };
   public client = '';
   public sede = '';
   public baseUrl = 'localhost:3004';
@@ -21,8 +27,8 @@ class AsyncEndpoints {
 
   constructor() {
     this.memoizedParams = null;
-    const { isAuthorized, client, sede, url } = this.getUrlParams();
-    this.isAuthorized = isAuthorized;
+    const { permissions, client, sede, url } = this.getUrlParams();
+    this.permissions = permissions;
     this.client = client;
     this.sede = sede;
     this.baseUrl = process.env.MEASUREMENT_URL;
@@ -56,7 +62,7 @@ class AsyncEndpoints {
     return annotation;
   }
 
-  getUrlParams() {
+  getUrlParams(): GetUrlParamsReturn {
     if (this.memoizedParams) {
       return this.memoizedParams;
     }
@@ -85,7 +91,7 @@ class AsyncEndpoints {
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
       }
-      const rep = response.json();
+      const rep = await response.json();
       this.pdfData.exist = rep.exist;
       return rep;
     } catch (error) {
@@ -129,6 +135,10 @@ class AsyncEndpoints {
   }
 
   async getMeasurements() {
+    if (!this.memoizedParams?.permissions.view_measurements) {
+      throw new Error('Error: permisos insuficientes');
+    }
+
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 5000);
@@ -146,7 +156,7 @@ class AsyncEndpoints {
   }
 
   async updateMeasurementLabel(measurementUID, measurement) {
-    if (!this.isAuthorized) {
+    if (!this.memoizedParams.permissions.save_measurements) {
       console.error('User is not authorized');
       return;
     }
@@ -186,7 +196,7 @@ class AsyncEndpoints {
 
     if (
       differenceInSeconds >= 1 &&
-      this.isAuthorized &&
+      this.permissions.save_measurements &&
       (!newMeasurement?.changeType || newMeasurement.changeType === 'Completed')
     ) {
       try {
@@ -218,6 +228,11 @@ class AsyncEndpoints {
   }
 
   async handleCreateMeasurement(newMeasurement) {
+    if (!this.memoizedParams?.permissions.save_measurements) {
+      console.error('User is not authorized');
+      return;
+    }
+
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 5000); // 5-second timeout
@@ -246,6 +261,11 @@ class AsyncEndpoints {
   }
 
   async handleDeleteMeasurement(measurementUID) {
+    if (!this.memoizedParams?.permissions.save_measurements) {
+      console.error('User is not authorized');
+      return;
+    }
+
     try {
       const controller = new AbortController();
       const timeout = setTimeout(() => controller.abort(), 5000); // 5-second timeout

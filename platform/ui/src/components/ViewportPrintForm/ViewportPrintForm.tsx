@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useState, createRef, useRef, useMemo } from 'react';
+import React, { useCallback, useEffect, useState, createRef, useRef } from 'react';
 import Typography from '../Typography';
 import Select from '../Select';
 import InputLabelWrapper from '../InputLabelWrapper';
@@ -313,7 +313,7 @@ const ViewportPrintForm = ({
       <p>Sexo: {patientInfo.PatientSex}</p>
       <p>Estudio: {patientInfo.StudyDescription}</p>
       <p>Captura: {patientInfo.StudyCapture}</p>
-      <p>Organización: {params.client.replace(/-/g, ' ')}</p>
+      <p>Organización: {params.clientAlias.replace(/-/g, ' ')}</p>
       <p>Sucursal: {params.sede.replace(/-/g, ' ')}</p>
     </div>
   );

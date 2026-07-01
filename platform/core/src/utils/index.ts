@@ -40,7 +40,8 @@ import {
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
-import getUrlParams from './getUrlParams';
+import getUrlParams, { GetUrlParamsReturn } from './getUrlParams';
+export type { GetUrlParamsReturn };
 
 // Commented out unused functionality.
 // Need to implement new mechanism for derived displaySets using the displaySetManager.

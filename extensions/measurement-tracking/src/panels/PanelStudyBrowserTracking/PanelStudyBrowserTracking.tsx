@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -12,7 +12,7 @@ import { PanelStudyBrowserHeader } from '@ohif/extension-default';
 import { useAppConfig, useCustomContext } from '@state';
 import { defaultActionIcons, defaultViewPresets } from './constants';
 
-const { formatDate, createStudyBrowserTabs } = utils;
+const { formatDate, createStudyBrowserTabs, getUrlParams } = utils;
 const thumbnailNoImageModalities = [
   'SR',
   'SEG',
@@ -54,6 +54,9 @@ export default function PanelStudyBrowserTracking({
 
   const { t } = useTranslation('Common');
   const { isMobile } = useCustomContext();
+  const {
+    permissions: { view_report },
+  } = getUrlParams();
 
   // Normally you nest the components so the tree isn't so deep, and the data
   // doesn't have to have such an intense shape. This works well enough for now.
@@ -74,6 +77,12 @@ export default function PanelStudyBrowserTracking({
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
   const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
   const [docVerify, setDocVerify] = useState(false);
+  const showPdfReport = useMemo(() => {
+    if (view_report) {
+      return view_report;
+    }
+    return false;
+  }, [view_report]);
 
   const [viewPresets, setViewPresets] = useState(
     customizationService.getCustomization('studyBrowser.viewPresets')?.value || defaultViewPresets
@@ -450,8 +459,11 @@ export default function PanelStudyBrowserTracking({
 
   useEffect(() => {
     if (
-      displaySets.length > 0 &&
-      displaySets.find(ds => ds.modality === 'DOC' && ds.displaySetInstanceUID.includes('doc'))
+      (displaySets.length > 0 &&
+        displaySets.find(
+          ds => ds.modality === 'DOC' && ds.displaySetInstanceUID.includes('doc')
+        )) ||
+      !showPdfReport
     ) {
       return;
     } else if (displaySets.length > 0 && !docVerify) {
@@ -469,7 +481,7 @@ export default function PanelStudyBrowserTracking({
               numInstances: 1,
               seriesNumber: 1,
               isTracked: false,
-              description: 'Reporte',
+              description: 'Informe',
               componentType: 'thumbnailNoImage',
             };
 
@@ -478,10 +490,11 @@ export default function PanelStudyBrowserTracking({
           }
         } catch (error) {}
       };
-
-      verifyPdf();
+      if (showPdfReport) {
+        verifyPdf();
+      }
     }
-  }, [displaySets, xpectriaService.XpectriaApi]);
+  }, [displaySets, xpectriaService.XpectriaApi, showPdfReport]);
 
   // TODO: Should not fire this on "close"
   function _handleStudyClick(StudyInstanceUID) {

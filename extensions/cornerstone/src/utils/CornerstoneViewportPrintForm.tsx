@@ -180,7 +180,7 @@ const CornerstoneViewportPrintForm = ({
     }
   };
 
-  const updateViewportPreview = (printViewportElement, internalCanvas, fileType) =>
+  const updateViewportPreview = (printViewportElement, _internalCanvas, fileType) =>
     new Promise(resolve => {
       const enabledElement = getEnabledElement(printViewportElement);
 
@@ -332,11 +332,29 @@ const CornerstoneViewportPrintForm = ({
     const divForPrintViewport = document.getElementById('cornerstone-print-container');
     const { id: studyUid } = getUrlParams();
 
+    if (!divForPrintViewport) {
+      showPrintError('No se encontró el contenedor para la vista previa de impresión.');
+      return;
+    }
+
     try {
       const canvas = await html2canvas(divForPrintViewport, { scale: scale });
 
       // Convertir el canvas a un Blob (Archivo)
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, `image/${fileType}`, 1.0));
+      // blob unknow corrige
+      const blob = await new Promise<Blob>((resolve, reject) => {
+        canvas.toBlob(
+          blob => {
+            if (blob) {
+              resolve(blob);
+            } else {
+              reject(new Error('Error al convertir el canvas a Blob.'));
+            }
+          },
+          `image/${fileType}`,
+          quality
+        );
+      });
 
       // Crear FormData y cargar la información requerida
       const form = new FormData();
@@ -347,9 +365,16 @@ const CornerstoneViewportPrintForm = ({
 
       // Enviar el FormData usando sendPrint
       const response = await sendPrint(form);
-      showPrintSuccess(response.message);
+
+      if (response.type === 'pdf') {
+        const url = URL.createObjectURL(response.blob);
+        window.open(url, '_blank');
+        showPrintSuccess('PDF generado correctamente.');
+      } else {
+        showPrintSuccess(response.message);
+      }
       onClose();
-    } catch (error) {
+    } catch (error: any) {
       showPrintError(error.message);
     }
   };
@@ -369,6 +394,7 @@ const CornerstoneViewportPrintForm = ({
       downloadBlob={downloadBlob}
       displaySetService={displaySetService}
       layout={layout}
+      canvasClass=""
     />
   );
 };

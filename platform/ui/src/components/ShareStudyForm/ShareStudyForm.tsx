@@ -1,12 +1,43 @@
-import React from 'react';
+import React, { useState, useMemo } from 'react';
 import Input from '../Input';
 import IconButton from '../IconButton';
 import { Icons } from '@ohif/ui-next';
 import Button, { ButtonEnums } from '../Button';
+import getUrlParams from '../../utils/getUrlParams';
+
+const KEY = parseInt(process.env.FLAG_KEY!, 16);
+const POS_PERMISSION = 4;
+
+function encodeFlags(flags: boolean[]): string {
+  // flags.length === 5
+  const mask = flags.reduce((m, f, i) => m | ((f ? 1 : 0) << i), 0);
+  const obf = mask ^ KEY;
+  return obf.toString(36);
+}
 
 function ShareStudyForm({ onClose = () => { } }: { onClose: () => void }) {
-  const url = window.location.href;
-  const urlWithoutPermission = url.substring(0, url.length - 1) + '0';
+  const [params] = useState(getUrlParams());
+
+  const urlWithoutPermission = useMemo(() => {
+    const url = window.location.href;
+
+    const pos = url.indexOf(params.id);
+
+    let start = '';
+    let end = '';
+
+    if (params.version === 'v2') {
+      start = url.slice(0, pos - POS_PERMISSION);
+      end = url.slice(pos);
+    } else {
+      start = url.slice(0, pos);
+      end = params.id;
+    }
+
+    const newPermission = encodeFlags([false, false, false, true, false]);
+
+    return start + newPermission + 'v2.' + end;
+  }, [params]);
 
   const handleCopyToClipboard = () => {
     navigator.clipboard.writeText(urlWithoutPermission);

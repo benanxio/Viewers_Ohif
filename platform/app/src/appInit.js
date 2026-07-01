@@ -21,8 +21,9 @@ import {
   WorkflowStepsService,
   StudyPrefetcherService,
   XpectriaService,
-  // utils,
 } from '@ohif/core';
+
+import UmamiService from './services/UmamiService';
 
 import loadModules, { loadModule as peerImport } from './pluginImports';
 
@@ -75,7 +76,35 @@ async function appInit(appConfigOrFunc, defaultExtensions, defaultModes) {
     WorkflowStepsService.REGISTRATION,
     [StudyPrefetcherService.REGISTRATION, appConfig.studyPrefetcher],
     XpectriaService.REGISTRATION,
+    UmamiService.REGISTRATION,
   ]);
+
+  // Initialize Umami (only activates if user has measurement + save permissions)
+  const umamiService = servicesManager.services.umamiService;
+  if (umamiService) {
+    umamiService.init();
+
+    // Subscribe to measurement events for tracking
+    const measurementService = servicesManager.services.measurementService;
+    if (measurementService) {
+      measurementService.subscribe(MeasurementService.EVENTS.MEASUREMENT_ADDED, ({ measurement }) => {
+        const toolName = measurement?.toolName || 'unknown';
+        window.umami?.track('viewer_measurement_created', { toolName });
+      });
+
+      measurementService.subscribe(MeasurementService.EVENTS.MEASUREMENT_REMOVED, ({ measurement }) => {
+        window.umami?.track('viewer_measurement_deleted');
+      });
+
+      measurementService.subscribe(MeasurementService.EVENTS.MEASUREMENTS_CLEARED, ({ measurements }) => {
+        // Ignore the automatic clear on mode init (no real measurements existed)
+        if (!measurements?.length) {
+          return;
+        }
+        window.umami?.track('viewer_measurements_cleared');
+      });
+    }
+  }
 
   errorHandler.getHTTPErrorHandler = () => {
     if (typeof appConfig.httpErrorHandler === 'function') {

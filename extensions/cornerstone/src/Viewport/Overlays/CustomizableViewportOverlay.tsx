@@ -74,7 +74,7 @@ const seriesDetailsItem = {
   label: '',
   title: 'Detalles',
   attribute: 'SeriesDetails',
-  condition: ({ instance }) => instance,
+  // condition: ({ instance }) => instance, // No renderiza cuando la intancia no cargo correctamente
   contentF: ({ servicesManager: { services }, details, patientInfo }) =>
     StudyDetailsItem({ patientInfo, viewportGridService: services.viewportGridService, details }),
 };

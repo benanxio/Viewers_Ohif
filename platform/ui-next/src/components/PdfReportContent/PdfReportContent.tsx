@@ -39,7 +39,7 @@ function PdfReportContent({
     <div className="bg-primary-black relative h-[70dvh] w-[90vw] text-white sm:w-[70vw] lg:w-[50vw]">
       {loader && (
         <LoadingIndicatorProgress
-          textBlock={'Cargando Reporte'}
+          textBlock={'Cargando Informe'}
           className={'bg-secondary-dark h-full w-full'}
         />
       )}
@@ -49,10 +49,10 @@ function PdfReportContent({
           type="application/pdf"
           className="h-full w-full"
         >
-          <div>No se puede visualizar el reporte</div>
+          <div>No se puede visualizar el informe</div>
         </object>
       ) : (
-        <div>Reporte abierto en nueva pestaña, cierre esta ventana</div>
+          <div>Informe abierto en nueva pestaña, cierre esta ventana</div>
       )}
     </div>
   );

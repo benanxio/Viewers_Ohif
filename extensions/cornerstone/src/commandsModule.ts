@@ -39,6 +39,10 @@ const toggleSyncFunctions = {
   voi: toggleVOISliceSync,
 };
 
+// Debounce timer for reference lines tracking — the command fires once per viewport
+// in the grid on each ACTIVE_VIEWPORT_ID_CHANGED event, so we collapse them into one.
+let _referenceLinesTrackTimer: ReturnType<typeof setTimeout> | null = null;
+
 function commandsModule({
   servicesManager,
   extensionManager,
@@ -282,7 +286,7 @@ function commandsModule({
 
       viewportGridService.setActiveViewportId(viewportId);
     },
-    arrowTextCallback: ({ callback, data, uid }) => {
+    arrowTextCallback: ({ callback }) => {
       const labelConfig = customizationService.get('measurementLabels');
       callLabelAutocompleteDialog(uiDialogService, callback, {}, labelConfig);
     },
@@ -291,9 +295,20 @@ function commandsModule({
       const { isCineEnabled } = cineService.getState();
       cineService.setIsCineEnabled(!isCineEnabled);
       viewports.forEach((_, index) => cineService.setCine({ id: index, isPlaying: false }));
+      window.umami?.track('viewer_cine_toggle', { playing: !isCineEnabled });
     },
 
-    setViewportWindowLevel({ viewportId, window, level }) {
+    setViewportWindowLevel({
+      viewportId,
+      window,
+      level,
+      presetName,
+    }: {
+      viewportId?: string;
+      window: number | string;
+      level: number | string;
+      presetName?: string;
+    }) {
       // convert to numbers
       const windowWidthNum = Number(window);
       const windowCenterNum = Number(level);
@@ -311,6 +326,15 @@ function commandsModule({
         },
       });
       viewport.render();
+
+      if (presetName) {
+        globalThis.umami?.track('viewer_window_level_preset_applied', {
+          presetName,
+          window: windowWidthNum,
+          level: windowCenterNum,
+        });
+      }
+      // Manual W/L path (no presetName) is tracked by the setWindowLevel caller — no double-track here.
     },
 
     toggleViewportColorbar: ({ viewportId, displaySetInstanceUIDs, options = {} }) => {
@@ -332,6 +356,10 @@ function commandsModule({
       }
 
       actions.setViewportWindowLevel({ ...props, viewportId });
+      window.umami?.track('viewer_window_level_applied', {
+        window: props.window,
+        level: props.level,
+      });
     },
     setToolEnabled: ({ toolName, toggle, toolGroupId }) => {
       const { viewports } = viewportGridService.getState();
@@ -469,13 +497,21 @@ function commandsModule({
           },
           containerDimensions: 'w-[70%] max-w-[900px]',
         });
+        window.umami?.track('viewer_download_opened', { viewportId: activeViewportId });
       }
     },
     //Custom toolbarbuttons
     createReportTab: () => {
-      const { isAuthorized, id } = getUrlParams();
-      if (isAuthorized) {
+      const { permissions, id } = getUrlParams();
+      if (permissions.edit_report) {
         window.open(`${process.env.FRONT_URL}/Report/${id}`);
+        window.umami?.track('viewer_report_opened');
+      } else {
+        uiNotificationService.show({
+          title: 'Reporte',
+          message: 'No tiene los permisos suficientes para realizar esta acción',
+          type: 'error',
+        });
       }
     },
     showShareStudy: () => {
@@ -490,6 +526,7 @@ function commandsModule({
           },
           containerDimensions: 'w-[70%] max-w-[900px]',
         });
+        window.umami?.track('viewer_share_opened');
       }
     },
     showPrintViewportModal: () => {
@@ -538,6 +575,7 @@ function commandsModule({
           },
           containerDimensions: 'w-[70%] max-w-[900px]',
         });
+        window.umami?.track('viewer_print_opened', { viewportId: activeViewportId });
       }
     },
     //End
