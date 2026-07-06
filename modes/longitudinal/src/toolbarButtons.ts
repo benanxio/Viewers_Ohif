@@ -231,6 +231,24 @@ const toolbarButtons: Button[] = [
       },
     },
   },
+  {
+    id: 'TestMIP',
+    uiType: 'ohif.radioGroup',
+    props: {
+      icon: 'tool-crosshair',
+      label: 'Test MIP',
+      tooltip: 'Probar proyección MIP/MinIP (grosor de corte ajustable)',
+      commands: 'showTestMipPanel',
+      evaluate: [
+        'evaluate.action',
+        {
+          name: 'evaluate.viewport.supported',
+          unsupportedViewportTypes: ['stack'],
+          disabledText: 'Selecciona un viewport MPR para usar esta herramienta',
+        },
+      ],
+    },
+  },
   // Custom Toolbar Buttons
   {
     id: 'Report',

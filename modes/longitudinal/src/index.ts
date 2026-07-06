@@ -21,6 +21,7 @@ const ohif = {
 const cornerstone = {
   measurements: '@ohif/extension-cornerstone.panelModule.panelMeasurement',
   segmentation: '@ohif/extension-cornerstone.panelModule.panelSegmentation',
+  testMip: '@ohif/extension-cornerstone.panelModule.panelTestMip',
 };
 
 const tracked = {
@@ -113,6 +114,7 @@ function modeFactory({ modeConfiguration }) {
         'Layout',
         'MastografiaFit',
         'Crosshairs',
+        'TestMIP',
         'MoreTools',
         'Report',
         'Share',
@@ -186,7 +188,7 @@ function modeFactory({ modeConfiguration }) {
             id: ohif.layout,
             props: {
               leftPanels: [tracked.thumbnailList],
-              rightPanels: [cornerstone.segmentation, tracked.measurements],
+              rightPanels: [cornerstone.segmentation, tracked.measurements, cornerstone.testMip],
               rightPanelClosed: true,
               viewports: [
                 {
