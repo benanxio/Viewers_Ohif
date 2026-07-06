@@ -27,6 +27,7 @@ import {
 } from '../../types/Presentation';
 
 import JumpPresets from '../../utils/JumpPresets';
+import { applyMammographyFit } from '../../utils/getMammographyDisplayArea';
 import { ViewportProperties } from '@cornerstonejs/core/types';
 import { useLutPresentationStore } from '../../stores/useLutPresentationStore';
 import { usePositionPresentationStore } from '../../stores/usePositionPresentationStore';
@@ -653,7 +654,14 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
         overlayProcessingResult.addOverlayFn();
       }
 
-      if (displayArea) {
+      if (displayArea?.dynamicLateralityAnchor) {
+        applyMammographyFit(
+          viewport,
+          this.servicesManager.services.displaySetService.getDisplaySetByUID(
+            displaySetInstanceUIDs[0]
+          )
+        );
+      } else if (displayArea) {
         viewport.setDisplayArea(displayArea);
       }
       if (rotation) {

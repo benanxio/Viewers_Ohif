@@ -29,6 +29,7 @@ import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownload
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
+import { applyMammographyFit } from './utils/getMammographyDisplayArea';
 import toggleVOISliceSync from './utils/toggleVOISliceSync';
 import { usePositionPresentationStore, useSegmentationPresentationStore } from './stores';
 
@@ -60,6 +61,7 @@ function commandsModule({
     colorbarService,
     hangingProtocolService,
     syncGroupService,
+    displaySetService,
   } = servicesManager.services;
 
   const { measurementServiceSource } = this;
@@ -681,6 +683,23 @@ function commandsModule({
           viewport.render();
         }
       }
+    },
+    fitViewportToHeight: () => {
+      const enabledElement = _getActiveViewportEnabledElement();
+
+      if (!enabledElement) {
+        return;
+      }
+
+      const { viewport } = enabledElement;
+
+      const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewport.id);
+      const displaySet = displaySetUIDs?.length
+        ? displaySetService.getDisplaySetByUID(displaySetUIDs[0])
+        : undefined;
+
+      applyMammographyFit(viewport, displaySet);
+      viewport.render();
     },
 
     /** Jumps the active viewport or the specified one to the given slice index */
@@ -1417,6 +1436,9 @@ function commandsModule({
     fitViewportToWindow: {
       commandFn: actions.scaleViewport,
       options: { direction: 0 },
+    },
+    fitViewportToHeight: {
+      commandFn: actions.fitViewportToHeight,
     },
     nextImage: {
       commandFn: actions.scroll,

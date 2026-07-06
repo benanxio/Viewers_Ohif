@@ -111,6 +111,7 @@ function modeFactory({ modeConfiguration }) {
         'WindowLevel',
         'Capture',
         'Layout',
+        'MastografiaFit',
         'Crosshairs',
         'MoreTools',
         'Report',
@@ -225,7 +226,9 @@ function modeFactory({ modeConfiguration }) {
     ],
     extensions: extensionDependencies,
     // Default protocol gets self-registered by default in the init
-    hangingProtocol: 'default',
+    // '@ohif/hpMammoAuto' auto-sizes the grid to the number of MG images
+    // available (1x1/1x2/1x3/2x2) instead of always defaulting to 1 viewport
+    hangingProtocol: ['default', '@ohif/hpMammoAuto'],
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must
