@@ -195,24 +195,6 @@ const toolbarButtons: Button[] = [
     },
   },
   {
-    id: 'MastografiaFit',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'tool-zoom',
-      label: 'Mastografia',
-      tooltip: 'Ajustar imagen a la altura del visor',
-      commands: 'fitViewportToHeight',
-      evaluate: [
-        'evaluate.action',
-        {
-          name: 'evaluate.modality.supported',
-          supportedModalities: ['MG', 'CR', 'DX'],
-          disabledText: 'Disponible solo para MG, CR y DX',
-        },
-      ],
-    },
-  },
-  {
     id: 'Crosshairs',
     uiType: 'ohif.radioGroup',
     props: {

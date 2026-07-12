@@ -2,9 +2,10 @@ import React, { useEffect, useState, useRef } from 'react';
 import PropTypes from 'prop-types';
 import { Enums } from '@cornerstonejs/core';
 
-function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
+function ViewportImageSliceLoadingIndicator({ viewportData, element, servicesManager }) {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(false);
+  const [prefetchProgress, setPrefetchProgress] = useState(null);
 
   const loadIndicatorRef = useRef(null);
   const imageIdToBeLoaded = useRef(null);
@@ -46,6 +47,52 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
     };
   }, [element, viewportData]);
 
+  // Aggregates StudyPrefetcherService progress (loaded/total instances) for
+  // the display set(s) shown in this viewport, so a large series (eg. a
+  // 500-image CT) shows a real "loaded X of Y images" progress bar instead
+  // of just an indeterminate spinner.
+  useEffect(() => {
+    const studyPrefetcherService = servicesManager?.services?.studyPrefetcherService;
+    const displaySetInstanceUIDs =
+      viewportData?.data?.map(datum => datum.displaySetInstanceUID) ?? [];
+
+    if (!studyPrefetcherService || !displaySetInstanceUIDs.length) {
+      setPrefetchProgress(null);
+      return;
+    }
+
+    const computeProgress = () => {
+      let total = 0;
+      let loaded = 0;
+
+      displaySetInstanceUIDs.forEach(uid => {
+        const state = studyPrefetcherService.getDisplaySetLoadingState(uid);
+
+        if (!state) {
+          return;
+        }
+
+        total += state.numInstances;
+        loaded += state.loadedImageIds.size + state.failedImageIds.size;
+      });
+
+      setPrefetchProgress(total ? { loaded, total } : null);
+    };
+
+    computeProgress();
+
+    const { unsubscribe } = studyPrefetcherService.subscribe(
+      studyPrefetcherService.EVENTS.DISPLAYSET_LOAD_PROGRESS,
+      evt => {
+        if (displaySetInstanceUIDs.includes(evt.displaySetInstanceUID)) {
+          computeProgress();
+        }
+      }
+    );
+
+    return () => unsubscribe();
+  }, [servicesManager, viewportData]);
+
   if (error) {
     return (
       <>
@@ -74,12 +121,31 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element }) {
     );
   }
 
+  if (prefetchProgress && prefetchProgress.loaded < prefetchProgress.total) {
+    const percent = Math.round((prefetchProgress.loaded / prefetchProgress.total) * 100);
+
+    return (
+      <div className="pointer-events-none absolute bottom-2 left-1/2 w-2/3 max-w-xs -translate-x-1/2">
+        <p className="text-primary-light mb-1 text-center text-xs">
+          Cargando imágenes {prefetchProgress.loaded}/{prefetchProgress.total} ({percent}%)
+        </p>
+        <div className="bg-primary-dark h-1.5 w-full overflow-hidden rounded-full">
+          <div
+            className="bg-primary-light h-full rounded-full transition-all"
+            style={{ width: `${percent}%` }}
+          />
+        </div>
+      </div>
+    );
+  }
+
   return null;
 }
 
 ViewportImageSliceLoadingIndicator.propTypes = {
   error: PropTypes.object,
   element: PropTypes.object,
+  servicesManager: PropTypes.object,
 };
 
 export default ViewportImageSliceLoadingIndicator;

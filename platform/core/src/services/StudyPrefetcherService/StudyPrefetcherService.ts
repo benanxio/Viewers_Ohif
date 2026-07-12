@@ -67,6 +67,9 @@ type ImageRequest = {
   displaySetInstanceUID: string;
   imageId: string;
   aborted: boolean;
+  /** Whether this image belongs to a currently active (displayed) display set,
+   * as opposed to an adjacent display set being prefetched in the background. */
+  isActive: boolean;
 };
 
 type PubSubServiceSubscription = { unsubscribe: () => any };
@@ -169,6 +172,17 @@ class StudyPrefetcherService extends PubSubService {
 
   public onModeEnter(): void {
     this._addEventListeners();
+  }
+
+  /**
+   * Returns the current loading state (numInstances, loaded/failed image ids,
+   * loadingProgress) for a given display set, or undefined if it is not being
+   * tracked (eg: prefetching hasn't reached it yet).
+   */
+  public getDisplaySetLoadingState(
+    displaySetInstanceUID: string
+  ): DisplaySetLoadingState | undefined {
+    return this._displaySetLoadingStates.get(displaySetInstanceUID);
   }
 
   /**
@@ -480,6 +494,18 @@ class StudyPrefetcherService extends PubSubService {
     const { displaySets, displaySetsToPrefetch } = this._getDisplaySets();
 
     displaySets.forEach(displaySet => this._addDisplaySetLoadingState(displaySet));
+
+    // Keep loading the currently displayed series in the background (not just
+    // on-demand as the user scrolls), so large stacks (eg. a 500-image CT)
+    // finish loading instead of stalling once cornerstone's bounded
+    // scroll-prefetch window stops growing.
+    const activeDisplaySets = displaySets.filter(displaySet =>
+      this._activeDisplaySetsInstanceUIDs.includes(displaySet.displaySetInstanceUID)
+    );
+    activeDisplaySets.forEach(displaySet =>
+      this._enqueueDisplaySetImagesRequests(displaySet, true)
+    );
+
     displaySetsToPrefetch.forEach(displaySet => this._enqueueDisplaySetImagesRequests(displaySet));
   }
 
@@ -581,11 +607,6 @@ class StudyPrefetcherService extends PubSubService {
       return;
     }
 
-    // Does not send any prefetch request until the active display sets are loaded
-    if (!this._areActiveDisplaySetsLoaded()) {
-      return;
-    }
-
     const { _pendingRequests: pendingRequests, _inflightRequests: inflightRequests } = this;
     const { maxNumPrefetchRequests } = this.config;
 
@@ -593,13 +614,33 @@ class StudyPrefetcherService extends PubSubService {
       return;
     }
 
+    // Adjacent-series prefetch requests wait until the active display sets are
+    // loaded, so bandwidth is prioritized towards what the user is currently
+    // looking at. Requests for the active display sets themselves are never
+    // gated behind this check, otherwise they could never be sent and this
+    // check would deadlock (it would never become true).
+    const activeDisplaySetsLoaded = this._areActiveDisplaySetsLoaded();
+    const sendableRequests = activeDisplaySetsLoaded
+      ? pendingRequests
+      : pendingRequests.filter(request => request.isActive);
+
+    if (!sendableRequests.length) {
+      return;
+    }
+
     const numImageRequests = Math.min(
-      pendingRequests.length,
+      sendableRequests.length,
       maxNumPrefetchRequests - inflightRequests.size
     );
-    const imageRequests = this._pendingRequests.splice(0, numImageRequests);
+    const imageRequests = sendableRequests.slice(0, numImageRequests);
 
     imageRequests.forEach(imageRequest => {
+      const requestIndex = this._pendingRequests.indexOf(imageRequest);
+
+      if (requestIndex !== -1) {
+        this._pendingRequests.splice(requestIndex, 1);
+      }
+
       const { imageId } = imageRequest;
       const options = {
         priority: -5,
@@ -624,7 +665,7 @@ class StudyPrefetcherService extends PubSubService {
     });
   }
 
-  private _enqueueDisplaySetImagesRequests(displaySet: DisplaySet) {
+  private _enqueueDisplaySetImagesRequests(displaySet: DisplaySet, isActive = false) {
     const { displaySetInstanceUID } = displaySet;
     const imageIds = this._getImageIdsForDisplaySet(displaySet);
 
@@ -634,10 +675,18 @@ class StudyPrefetcherService extends PubSubService {
         return;
       }
 
+      // Avoid queueing the same image twice (eg: it may already be pending as
+      // an active-display-set request from a previous sync, or the active
+      // display set may also show up as adjacent to itself).
+      if (this._pendingRequests.some(request => request.imageId === imageId)) {
+        return;
+      }
+
       this._pendingRequests.push({
         displaySetInstanceUID,
         imageId,
         aborted: false,
+        isActive,
       });
     });
   }

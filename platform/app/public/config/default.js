@@ -24,6 +24,15 @@ window.config = {
     // above, the number of requests can be go a lot higher.
     prefetch: 25,
   },
+  // Tracks per-series image loading progress (used by the study browser
+  // thumbnails and the in-viewport loading progress bar) and prefetches
+  // the closest adjacent series in the background.
+  studyPrefetcher: {
+    enabled: true,
+    displaySetsCount: 1,
+    maxNumPrefetchRequests: 10,
+    order: 'closest',
+  },
   // filterQueryParam: false,
   defaultDataSourceName: 'dicomweb',
   /* Dynamic config allows user to pass "configUrl" query string this allows to load config without recompiling application. The regex will ensure valid configuration source */

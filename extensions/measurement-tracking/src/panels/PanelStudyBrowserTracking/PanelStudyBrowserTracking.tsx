@@ -310,7 +310,7 @@ export default function PanelStudyBrowserTracking({
     setDisplaySets(displaySets => {
       let existDoc = [];
       if (displaySets.length > 0) {
-        const prevDoc = displaySets.find(ds => ds.description.includes('Reporte'));
+        const prevDoc = displaySets.find(ds => ds.modality === 'DOC');
         if (prevDoc) {
           existDoc = [prevDoc];
         }
@@ -412,7 +412,7 @@ export default function PanelStudyBrowserTracking({
         setDisplaySets(displaySets => {
           let existDoc = [];
           if (displaySets.length > 0) {
-            const prevDoc = displaySets.find(ds => ds.description.includes('Reporte'));
+            const prevDoc = displaySets.find(ds => ds.modality === 'DOC');
             if (prevDoc) {
               existDoc = [prevDoc];
             }
@@ -438,7 +438,10 @@ export default function PanelStudyBrowserTracking({
           uiNotificationService
         );
 
-        setDisplaySets(mappedDisplaySets);
+        setDisplaySets(displaySets => {
+          const prevDoc = displaySets.find(ds => ds.modality === 'DOC');
+          return prevDoc ? [prevDoc, ...mappedDisplaySets] : mappedDisplaySets;
+        });
       }
     );
 
