@@ -648,6 +648,19 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
     return viewport.setStack(imageIdsToSet, initialImageIndexToUse).then(() => {
       viewport.setProperties({ ...properties });
+
+      // StackViewport._updateActorToDisplayImageId carries the outgoing image's
+      // zoom across a stack swap, and that zoom is a ratio against the previous
+      // series' initial camera - not an absolute scale. Swapping in a display set
+      // with a different FOV therefore re-applies a ratio computed for a camera
+      // that no longer exists, which can leave the image at an absurd scale, and
+      // it sticks: every later swap keeps carrying the bad ratio forward until a
+      // reset. Re-fit whenever this display set has no presentation of its own to
+      // restore, so the inherited ratio never reaches the new image.
+      if (!presentations?.positionPresentation?.viewPresentation) {
+        viewport.resetCamera();
+      }
+
       this.setPresentations(viewport.id, presentations, viewportInfo);
 
       if (overlayProcessingResult?.addOverlayFn) {
