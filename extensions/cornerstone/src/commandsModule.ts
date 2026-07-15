@@ -26,6 +26,7 @@ import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportPrintForm from './utils/CornerstoneViewportPrintForm';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
+import getCornerstoneBlendMode from './utils/getCornerstoneBlendMode';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
@@ -579,6 +580,38 @@ function commandsModule({
         });
         window.umami?.track('viewer_print_opened', { viewportId: activeViewportId });
       }
+    },
+    // Applies the blend mode (MIP/MinIP/Mean) and slab thickness to every viewport
+    // sharing the same tool group as viewportId (ie. the 3 MPR views at once),
+    // falling back to the single viewport when it's not part of a tool group.
+    setViewportBlendModeAndThickness: ({ viewportId, blendMode, slabThickness }) => {
+      const cornerstoneBlendMode = getCornerstoneBlendMode(blendMode);
+      const toolGroup = toolGroupService.getToolGroupForViewport(viewportId);
+      const targetViewportIds = toolGroup ? toolGroup.getViewportIds() : [viewportId];
+
+      targetViewportIds.forEach(targetViewportId => {
+        const viewport = cornerstoneViewportService.getCornerstoneViewport(targetViewportId);
+
+        if (!viewport || typeof viewport.setBlendMode !== 'function') {
+          return;
+        }
+
+        viewport.setBlendMode(cornerstoneBlendMode);
+        viewport.setProperties({ slabThickness });
+        viewport.render();
+      });
+
+      // keep the Crosshairs slab-thickness handles (colored dots) in sync so
+      // dragging them afterwards continues to use the mode picked here
+      if (toolGroup?.hasTool('Crosshairs')) {
+        toolGroup.setToolConfiguration('Crosshairs', {
+          slabThicknessBlendMode: cornerstoneBlendMode,
+        });
+      }
+    },
+    showTestMipPanel: () => {
+      const { panelService } = servicesManager.services;
+      panelService.activatePanel('@ohif/extension-cornerstone.panelModule.panelTestMip', true);
     },
     //End
     rotateViewport: ({ rotation }) => {
@@ -1471,6 +1504,12 @@ function commandsModule({
     },
     showShareStudy: {
       commandFn: actions.showShareStudy,
+    },
+    setViewportBlendModeAndThickness: {
+      commandFn: actions.setViewportBlendModeAndThickness,
+    },
+    showTestMipPanel: {
+      commandFn: actions.showTestMipPanel,
     },
     //End Commands for Custom ToolbarButtons
     toggleCine: {

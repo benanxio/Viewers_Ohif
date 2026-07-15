@@ -4,6 +4,7 @@ import { Toolbox } from '@ohif/ui-next';
 import PanelSegmentation from './panels/PanelSegmentation';
 import ActiveViewportWindowLevel from './components/ActiveViewportWindowLevel';
 import PanelMeasurementTable from './panels/PanelMeasurement';
+import PanelTestMip from './panels/PanelTestMip';
 
 const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: withAppTypes) => {
   const wrappedPanelSegmentation = ({ configuration }) => {
@@ -57,6 +58,15 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
     );
   };
 
+  const wrappedPanelTestMip = () => {
+    return (
+      <PanelTestMip
+        commandsManager={commandsManager}
+        servicesManager={servicesManager}
+      />
+    );
+  };
+
   const wrappedPanelMeasurement = ({ configuration }) => {
     return (
       <PanelMeasurementTable
@@ -104,6 +114,13 @@ const getPanelModule = ({ commandsManager, servicesManager, extensionManager }: 
       iconLabel: 'Segmentation',
       label: 'Segmentation',
       component: wrappedPanelSegmentationWithTools,
+    },
+    {
+      name: 'panelTestMip',
+      iconName: 'tab-4d',
+      iconLabel: 'Test MIP',
+      label: 'Test MIP',
+      component: wrappedPanelTestMip,
     },
   ];
 };
