@@ -1,6 +1,7 @@
 // TODO: torn, can either bake this here; or have to create a whole new button type
 // Only ways that you can pass in a custom React component for render :l
 import { ToolbarService } from '@ohif/core';
+import { MipMenuItem } from '@ohif/ui';
 import type { Button } from '@ohif/core/types';
 
 const { createButton } = ToolbarService;
@@ -196,39 +197,36 @@ const toolbarButtons: Button[] = [
   },
   {
     id: 'Crosshairs',
-    uiType: 'ohif.radioGroup',
+    uiType: 'ohif.splitButton',
     props: {
-      type: 'tool',
-      icon: 'tool-crosshair',
-      label: 'Crosshairs',
-      commands: {
-        commandName: 'setToolActiveToolbar',
-        commandOptions: {
-          toolGroupIds: ['mpr'],
+      groupId: 'Crosshairs',
+      // No group evaluator on purpose: the promote-to-primary one matches items
+      // by tool name, and this dropdown holds a control rather than a tool, so it
+      // would promote the control to primary whenever no tool is active.
+      primary: createButton({
+        id: 'Crosshairs',
+        icon: 'tool-crosshair',
+        label: 'Crosshairs',
+        tooltip: 'Crosshairs',
+        commands: {
+          commandName: 'setToolActiveToolbar',
+          commandOptions: {
+            toolGroupIds: ['mpr'],
+          },
         },
-      },
-      evaluate: {
-        name: 'evaluate.cornerstoneTool',
-        disabledText: 'Select an MPR viewport to enable this tool',
-      },
-    },
-  },
-  {
-    id: 'TestMIP',
-    uiType: 'ohif.radioGroup',
-    props: {
-      icon: 'tool-crosshair',
-      label: 'Test MIP',
-      tooltip: 'Probar proyección MIP/MinIP (grosor de corte ajustable)',
-      commands: 'showTestMipPanel',
-      evaluate: [
-        'evaluate.action',
-        {
-          name: 'evaluate.viewport.supported',
-          unsupportedViewportTypes: ['stack'],
-          disabledText: 'Selecciona un viewport MPR para usar esta herramienta',
+        evaluate: {
+          name: 'evaluate.cornerstoneTool',
+          disabledText: 'Select an MPR viewport to enable this tool',
         },
-      ],
+      }),
+      secondary: {
+        icon: 'chevron-down',
+        tooltip: 'Proyección y grosor de corte',
+      },
+      // Single item holding the whole MIP panel - MipMenuItem ignores the item
+      // payload and renders the slab thickness / projection mode controls.
+      items: [{ id: 'MipControls' }],
+      renderer: MipMenuItem,
     },
   },
   // Custom Toolbar Buttons

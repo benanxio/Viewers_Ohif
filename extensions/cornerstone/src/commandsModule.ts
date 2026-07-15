@@ -609,10 +609,6 @@ function commandsModule({
         });
       }
     },
-    showTestMipPanel: () => {
-      const { panelService } = servicesManager.services;
-      panelService.activatePanel('@ohif/extension-cornerstone.panelModule.panelTestMip', true);
-    },
     //End
     rotateViewport: ({ rotation }) => {
       const enabledElement = _getActiveViewportEnabledElement();
@@ -1507,9 +1503,6 @@ function commandsModule({
     },
     setViewportBlendModeAndThickness: {
       commandFn: actions.setViewportBlendModeAndThickness,
-    },
-    showTestMipPanel: {
-      commandFn: actions.showTestMipPanel,
     },
     //End Commands for Custom ToolbarButtons
     toggleCine: {

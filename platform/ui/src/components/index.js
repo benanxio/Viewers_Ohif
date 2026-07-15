@@ -65,6 +65,7 @@ import ViewportGrid from './ViewportGrid';
 import ViewportPane from './ViewportPane';
 import WindowLevel from './WindowLevel';
 import WindowLevelMenuItem from './WindowLevelMenuItem';
+import MipMenuItem from './MipMenuItem';
 import UserPreferences from './UserPreferences';
 import HotkeysPreferences from './HotkeysPreferences';
 import HotkeyField from './HotkeyField';
@@ -197,6 +198,7 @@ export {
   ViewportOverlay,
   WindowLevel,
   WindowLevelMenuItem,
+  MipMenuItem,
   MeasurementItem,
   InputDoubleRange,
   LabellingFlow,

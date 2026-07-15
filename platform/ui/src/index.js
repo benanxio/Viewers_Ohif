@@ -126,6 +126,7 @@ export {
   ViewportPane,
   WindowLevel,
   WindowLevelMenuItem,
+  MipMenuItem,
   ImageScrollbar,
   ViewportOverlay,
   MeasurementItem,

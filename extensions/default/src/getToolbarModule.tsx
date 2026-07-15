@@ -26,7 +26,10 @@ export default function getToolbarModule({ commandsManager, servicesManager }: w
     },
     {
       name: 'ohif.splitButton',
-      defaultComponent: ToolbarSplitButtonWithServices,
+      // commandsManager is injected here so a custom `renderer` can drive live
+      // controls (eg. a slider) instead of only firing an item's fixed commands
+      defaultComponent: props =>
+        ToolbarSplitButtonWithServices({ ...props, commandsManager, servicesManager }),
     },
     {
       name: 'ohif.layoutSelector',

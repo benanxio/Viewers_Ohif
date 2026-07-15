@@ -10,6 +10,7 @@ function ToolbarSplitButtonWithServices({
   renderer,
   onInteraction,
   servicesManager,
+  commandsManager,
 }: withAppTypes) {
   const { toolbarService } = servicesManager?.services;
 
@@ -33,7 +34,14 @@ function ToolbarSplitButtonWithServices({
   const PrimaryButtonComponent =
     toolbarService?.getButtonComponentForUIType(primary.uiType) ?? ToolbarButton;
 
-  const listItemRenderer = renderer;
+  // Rendered as an element rather than called as a plain function so a renderer
+  // that holds hooks gets its own fiber instead of binding them to the row that
+  // calls it. The managers are handed over because an item's static `commands`
+  // cannot carry a value (eg. a slab thickness slider).
+  const listItemRenderer = renderer
+    ? props =>
+        React.createElement(renderer, { ...props, servicesManager, commandsManager, key: props.id })
+    : undefined;
 
   return (
     <SplitButton
