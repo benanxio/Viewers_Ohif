@@ -226,12 +226,9 @@ function modeFactory({ modeConfiguration }) {
     extensions: extensionDependencies,
     // Default protocol gets self-registered by default in the init
     // '@ohif/hpMammoAuto' auto-sizes the grid to the number of MG images
-    // available (1x1/1x2/1x3/2x2) instead of always defaulting to 1 viewport.
-    // DESACTIVADO temporalmente: el código del protocolo sigue presente
-    // (hpMammoAuto.ts, commands, utils) pero no se aplica. Para reactivar el
-    // autoajuste de MG, restaurar: ['default', '@ohif/hpMammoAuto']
-    // hangingProtocol: ['default', '@ohif/hpMammoAuto'],
-    hangingProtocol: 'default',
+    // available (1x1/1x2/1x3/2x2) instead of always defaulting to 1 viewport,
+    // and applies the laterality-based auto-fit per viewport.
+    hangingProtocol: ['default', '@ohif/hpMammoAuto'],
     // Order is important in sop class handlers when two handlers both use
     // the same sop class under different situations.  In that case, the more
     // general handler needs to come last.  For this case, the dicomvideo must

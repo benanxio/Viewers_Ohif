@@ -48,6 +48,19 @@ const hpMammographyAuto: Types.HangingProtocol.Protocol = {
       },
       required: true,
     },
+    {
+      // Per-site opt-out: `mgAutoAllowed` is false for sede_ids listed in
+      // mgAutoAllowed.ts. When it fails (required), this protocol is
+      // disqualified and the study falls back to the default protocol -
+      // i.e. no auto grid and no MG fit for that site.
+      id: 'SiteAllowed',
+      weight: 1,
+      attribute: 'mgAutoAllowed',
+      constraint: {
+        equals: true,
+      },
+      required: true,
+    },
   ],
   toolGroupIds: ['default'],
   displaySetSelectors: {
@@ -64,6 +77,17 @@ const hpMammographyAuto: Types.HangingProtocol.Protocol = {
           attribute: 'numImageFrames',
           constraint: {
             greaterThan: { value: 0 },
+          },
+          required: true,
+        },
+        {
+          // Only single-frame 2D images belong in the auto grid: regular FFDM,
+          // or the synthetic 2D "V-Preview" (GENERATED_2D) of a tomosynthesis
+          // study. This excludes the multiframe tomosynthesis volumes (100+
+          // slices each), which should not fill the auto-hung grid.
+          attribute: 'isMultiFrame',
+          constraint: {
+            equals: false,
           },
           required: true,
         },

@@ -33,11 +33,22 @@ function getLateralityFromImageType(instance): string | undefined {
   return undefined;
 }
 
+/**
+ * Multiframe / enhanced MG objects (e.g. tomosynthesis and their synthetic 2D
+ * images) don't carry ImageLaterality (0020,0062) at the top level; the side
+ * lives in FrameLaterality (0020,9072) inside the Shared Functional Groups.
+ */
+function getFrameLaterality(instance): string | undefined {
+  return instance?.SharedFunctionalGroupsSequence?.[0]?.FrameAnatomySequence?.[0]
+    ?.FrameLaterality;
+}
+
 function getLateralityAnchorSide(displaySet, instance): 'L' | 'R' | undefined {
   const laterality =
     instance?.ImageLaterality ||
     instance?.Laterality ||
     displaySet?.Laterality ||
+    getFrameLaterality(instance) ||
     getLateralityFromImageType(instance);
 
   if (laterality === 'L' || laterality === 'R') {
@@ -47,10 +58,29 @@ function getLateralityAnchorSide(displaySet, instance): 'L' | 'R' | undefined {
 }
 
 /**
+ * Public entry point. Wraps the fit in a try/catch so that any unexpected
+ * failure (missing viewport APIs, geometry errors, unusual metadata, etc.)
+ * degrades to a no-op instead of rejecting the setStack promise and breaking
+ * the viewport mount.
+ *
+ * Per-site opt-out (grid + fit) is handled upstream by the `mgAutoAllowed`
+ * hanging-protocol attribute, which prevents `@ohif/hpMammoAuto` from matching
+ * for excluded sites so they fall back to the default protocol entirely.
+ */
+export function applyMammographyFit(viewport, displaySet) {
+  try {
+    applyMammographyFitInternal(viewport, displaySet);
+  } catch (error) {
+    // eslint-disable-next-line no-console
+    console.warn('[MastografiaFit] skipped (error)', error);
+  }
+}
+
+/**
  * Fills the viewport height and pans the given cornerstone3d stack viewport
  * so the tissue side of the image is flush against the matching edge.
  */
-export function applyMammographyFit(viewport, displaySet) {
+function applyMammographyFitInternal(viewport, displaySet) {
   const instance = getInstance(displaySet);
   const anchorSide = getLateralityAnchorSide(displaySet, instance);
 

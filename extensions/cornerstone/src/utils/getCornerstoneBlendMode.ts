@@ -23,3 +23,19 @@ export default function getCornerstoneBlendMode(blendMode: string): Enums.BlendM
 
   throw new Error(`Unsupported blend mode: ${blendMode}`);
 }
+
+/**
+ * Inverse of getCornerstoneBlendMode: turns the enum a viewport reports back
+ * into the string the UI works with, so a control can show which mode is
+ * actually active instead of assuming one.
+ */
+export function getBlendModeString(blendMode: Enums.BlendModes): string {
+  switch (blendMode) {
+    case Enums.BlendModes.MINIMUM_INTENSITY_BLEND:
+      return MINIP;
+    case Enums.BlendModes.AVERAGE_INTENSITY_BLEND:
+      return AVG;
+    default:
+      return MIP;
+  }
+}

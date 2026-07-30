@@ -40,10 +40,19 @@ function MipMenuItem({ servicesManager, commandsManager }: withAppTypes) {
   const viewport = cornerstoneViewportService?.getCornerstoneViewport(activeViewportId);
   const isVolumeViewport = typeof viewport?.setBlendMode === 'function';
 
+  // Both values are read back from the viewport so the controls show what is
+  // actually applied rather than whatever was picked last. The blend mode comes
+  // through a command because cornerstone reports it as an enum, and translating
+  // that here would drag a cornerstone dependency into this library.
   useEffect(() => {
-    if (isVolumeViewport) {
-      setThickness(round1(Math.max(viewport.getSlabThickness() ?? MIN_THICKNESS, MIN_THICKNESS)));
+    if (!isVolumeViewport) {
+      return;
     }
+
+    setThickness(round1(Math.max(viewport.getSlabThickness() ?? MIN_THICKNESS, MIN_THICKNESS)));
+    setBlendMode(
+      commandsManager?.runCommand('getViewportBlendMode', { viewportId: activeViewportId }) ?? 'mip'
+    );
   }, [activeViewportId, isVolumeViewport]);
 
   const apply = useCallback(

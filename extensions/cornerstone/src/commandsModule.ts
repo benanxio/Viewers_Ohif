@@ -26,7 +26,7 @@ import { vec3, mat4 } from 'gl-matrix';
 
 import CornerstoneViewportPrintForm from './utils/CornerstoneViewportPrintForm';
 import CornerstoneViewportDownloadForm from './utils/CornerstoneViewportDownloadForm';
-import getCornerstoneBlendMode from './utils/getCornerstoneBlendMode';
+import getCornerstoneBlendMode, { getBlendModeString } from './utils/getCornerstoneBlendMode';
 import toggleImageSliceSync from './utils/imageSliceSync/toggleImageSliceSync';
 import { getFirstAnnotationSelected } from './utils/measurementServiceMappings/utils/selection';
 import getActiveViewportEnabledElement from './utils/getActiveViewportEnabledElement';
@@ -608,6 +608,18 @@ function commandsModule({
           slabThicknessBlendMode: cornerstoneBlendMode,
         });
       }
+    },
+    // Reports the viewport's current blend mode as a string. Exposed as a command
+    // so UI outside this extension can read it without depending on cornerstone
+    // just to translate the enum.
+    getViewportBlendMode: ({ viewportId }) => {
+      const viewport = cornerstoneViewportService.getCornerstoneViewport(viewportId);
+
+      if (!viewport || typeof viewport.getBlendMode !== 'function') {
+        return undefined;
+      }
+
+      return getBlendModeString(viewport.getBlendMode());
     },
     //End
     rotateViewport: ({ rotation }) => {
@@ -1503,6 +1515,9 @@ function commandsModule({
     },
     setViewportBlendModeAndThickness: {
       commandFn: actions.setViewportBlendModeAndThickness,
+    },
+    getViewportBlendMode: {
+      commandFn: actions.getViewportBlendMode,
     },
     //End Commands for Custom ToolbarButtons
     toggleCine: {
