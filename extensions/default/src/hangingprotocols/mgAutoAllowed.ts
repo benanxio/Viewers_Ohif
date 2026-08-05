@@ -7,6 +7,21 @@
 const MG_AUTO_EXCLUDED_SEDE_IDS: number[] = [20, 11, 25];
 
 /**
+ * Mirrors the app's mobile detection (customContext.tsx): user-agent match or a
+ * narrow viewport. The MG auto layout is a desktop reading behavior, so on
+ * phones we fall back to the default single-viewport protocol.
+ */
+function isMobileDevice(): boolean {
+  if (typeof window === 'undefined' || typeof navigator === 'undefined') {
+    return false;
+  }
+  const ua = (navigator.userAgent || (navigator as any).vendor || '').toLowerCase();
+  const isUserAgentMobile = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua);
+  const isScreenSizeMobile = window.innerWidth <= 768;
+  return isUserAgentMobile || isScreenSizeMobile;
+}
+
+/**
  * Reads the study's `sede_id`. The dicomjson data source spreads study-level
  * fields onto every instance, so the id is available both on the study and on
  * each display set's images; we accept whichever is present.
@@ -36,6 +51,9 @@ function readSedeId(study, options): number | undefined {
  * for studies that don't carry the field.
  */
 export default function mgAutoAllowed(study, options): boolean {
+  if (isMobileDevice()) {
+    return false;
+  }
   const sedeId = readSedeId(study, options);
   if (sedeId === undefined) {
     return true;

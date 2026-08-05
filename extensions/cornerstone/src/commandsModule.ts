@@ -703,6 +703,25 @@ function commandsModule({
       viewport.resetProperties?.();
       viewport.resetCamera();
 
+      // If this viewport was auto-fit for mammography (hpMammoAuto sets
+      // dynamicLateralityAnchor on its displayArea), resetCamera above wipes the
+      // fill-height + laterality anchor and drops back to the plain whole-image
+      // view. Re-apply the MG fit so Reset returns to the fitted state instead -
+      // but only in a multi-viewport grid (2x2/1x2/...); in a single-viewport
+      // layout Reset keeps its plain behavior. The flag is only present when
+      // hpMammoAuto matched, so mobile and excluded sites keep the plain reset.
+      const { layout } = viewportGridService.getState();
+      const isGridLayout = (layout?.numRows ?? 1) * (layout?.numCols ?? 1) > 1;
+      const viewportInfo = cornerstoneViewportService.getViewportInfo(viewport.id);
+      const displayArea = viewportInfo?.getViewportOptions?.()?.displayArea;
+      if (isGridLayout && displayArea?.dynamicLateralityAnchor) {
+        const displaySetUIDs = viewportGridService.getDisplaySetsUIDsForViewport(viewport.id);
+        const displaySet = displaySetUIDs?.length
+          ? displaySetService.getDisplaySetByUID(displaySetUIDs[0])
+          : undefined;
+        applyMammographyFit(viewport, displaySet);
+      }
+
       viewport.render();
     },
     scaleViewport: ({ direction }) => {

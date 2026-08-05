@@ -165,6 +165,7 @@ function getDisplaySetsFromSeries(instances) {
   // into their own specific display sets. Place the rest of each
   // series into another display set.
   const stackableInstances = [];
+  const singleImageModalityInstances = [];
   instances.forEach(instance => {
     // All imaging modalities must have a valid value for sopClassUid (x00080016) or rows (x00280010)
     if (!isImage(instance.SOPClassUID) && !instance.Rows) {
@@ -184,17 +185,35 @@ function getDisplaySetsFromSeries(instances) {
       });
       displaySets.push(displaySet);
     } else if (isSingleImageModality(instance.Modality)) {
-      displaySet = makeDisplaySet([instance]);
-      displaySet.setAttributes({
-        sopClassUids,
-        instanceNumber: instance.InstanceNumber,
-        acquisitionDatetime: instance.AcquisitionDateTime,
-      });
-      displaySets.push(displaySet);
+      singleImageModalityInstances.push(instance);
     } else {
       stackableInstances.push(instance);
     }
   });
+
+  if (singleImageModalityInstances.length) {
+    // Some units export tomosynthesis slices as many single-frame MG instances instead of one multiframe object; geometry tells that apart from unrelated views sharing a series (appConfig omitted to skip the unrelated GPU 3D-texture-size gate).
+    const { value: isSliceStack } = isDisplaySetReconstructable(singleImageModalityInstances);
+
+    if (isSliceStack) {
+      const displaySet = makeDisplaySet(singleImageModalityInstances);
+      displaySet.setAttribute('studyInstanceUid', instances[0].StudyInstanceUID);
+      displaySet.setAttributes({
+        sopClassUids,
+      });
+      displaySets.push(displaySet);
+    } else {
+      singleImageModalityInstances.forEach(instance => {
+        const displaySet = makeDisplaySet([instance]);
+        displaySet.setAttributes({
+          sopClassUids,
+          instanceNumber: instance.InstanceNumber,
+          acquisitionDatetime: instance.AcquisitionDateTime,
+        });
+        displaySets.push(displaySet);
+      });
+    }
+  }
 
   if (stackableInstances.length) {
     const displaySet = makeDisplaySet(stackableInstances);
