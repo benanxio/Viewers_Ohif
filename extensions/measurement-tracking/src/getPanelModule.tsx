@@ -1,5 +1,10 @@
 import { Types } from '@ohif/core';
-import { PanelMeasurementTableTracking, PanelStudyBrowserTracking } from './panels';
+import {
+  PanelMeasurementTableTracking,
+  PanelStudyBrowserTracking,
+  PanelReport,
+  PanelHistory,
+} from './panels';
 import i18n from 'i18next';
 import React from 'react';
 
@@ -31,6 +36,36 @@ function getPanelModule({ commandsManager, extensionManager, servicesManager }):
       label: i18n.t('SidePanel:Measurements'),
       component: props => (
         <PanelMeasurementTableTracking
+          {...props}
+          commandsManager={commandsManager}
+          extensionManager={extensionManager}
+          servicesManager={servicesManager}
+        />
+      ),
+    },
+    // Custom Xpectria panel
+    {
+      name: 'report',
+      iconName: 'ReportIcon',
+      iconLabel: 'Informar',
+      label: 'Informar',
+      component: props => (
+        <PanelReport
+          {...props}
+          commandsManager={commandsManager}
+          extensionManager={extensionManager}
+          servicesManager={servicesManager}
+        />
+      ),
+    },
+    // Custom Xpectria panel
+    {
+      name: 'history',
+      iconName: 'HistoryIcon',
+      iconLabel: 'Historial',
+      label: 'Historial',
+      component: props => (
+        <PanelHistory
           {...props}
           commandsManager={commandsManager}
           extensionManager={extensionManager}

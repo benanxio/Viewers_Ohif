@@ -5,9 +5,8 @@ export const ReportIcon = (props: IconProps) => (
   <svg
     width={28}
     height={28}
-    fill="none"
+    fill="currentColor"
     fillRule="evenodd"
-    stroke="currentColor"
     xmlns="http://www.w3.org/2000/svg"
     viewBox="61.38999938964844 -20 389.22100830078125 552.001953125"
     xmlSpace="preserve"

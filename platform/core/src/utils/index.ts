@@ -40,7 +40,7 @@ import {
 import { splitComma, getSplitParam } from './splitComma';
 import { createStudyBrowserTabs } from './createStudyBrowserTabs';
 import { sopClassDictionary } from './sopClassDictionary';
-import getUrlParams, { GetUrlParamsReturn } from './getUrlParams';
+import getUrlParams, { GetUrlParamsReturn, encodeFlags } from './getUrlParams';
 export type { GetUrlParamsReturn };
 
 // Commented out unused functionality.
@@ -89,6 +89,7 @@ const utils = {
   generateAcceptHeader,
   createStudyBrowserTabs,
   getUrlParams,
+  encodeFlags,
 };
 
 export {
@@ -123,6 +124,7 @@ export {
   generateAcceptHeader,
   createStudyBrowserTabs,
   getUrlParams,
+  encodeFlags,
 };
 
 export default utils;

@@ -6,6 +6,18 @@ interface pdfDataProps {
   pdf: Blob | null;
 }
 
+export interface HistorialItem {
+  study_iuid: string;
+  client: string;
+  sede: string;
+  dt: string;
+  study_date: string | null;
+  modality: string | null;
+  study_desc: string | null;
+  alph_name: string | null;
+  has_report: boolean;
+}
+
 class AsyncEndpoints {
   public memoizedParams: GetUrlParamsReturn | null = null;
   public permissions: GetUrlParamsReturn['permissions'] = {
@@ -131,6 +143,60 @@ class AsyncEndpoints {
       }
     } catch (error) {
       return Promise.reject(new Error('Error obteniendo el pdf: ' + error.message));
+    }
+  }
+
+  async getHistorial(): Promise<HistorialItem[]> {
+    const params = this.getUrlParams();
+
+    try {
+      const response = await fetch(
+        `${this.backendUrl}/estudio/historial/?Uid=${encodeURIComponent(params.id)}`
+      );
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      return await response.json();
+    } catch (error) {
+      throw new Error(`Error obteniendo historial: ${error.message}`);
+    }
+  }
+
+  // Independiente de pdfData/getPdfBlob (que cachea el informe del estudio
+  // actual): esto obtiene el PDF firmado de un estudio PREVIO, sin caché,
+  // para el modal de "ver informe" del panel de Historial.
+  async getPdfBlobFor(params: {
+    sede: string;
+    date: string;
+    client: string;
+    uid: string;
+  }): Promise<string> {
+    const queryString = new URLSearchParams({
+      Sede: params.sede,
+      Fecha: params.date,
+      Cliente: params.client,
+      Uid: params.uid,
+    }).toString();
+
+    try {
+      const response = await fetch(`${this.backendUrl}/reports/get_report/?${queryString}`, {
+        method: 'GET',
+      });
+
+      if (response.status === 404) {
+        throw new Error('El archivo no existe');
+      }
+
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error('Error al obtener el archivo');
+      }
+
+      const blob = await response.blob();
+      return URL.createObjectURL(new Blob([blob], { type: 'application/pdf' }));
+    } catch (error) {
+      throw new Error('Error obteniendo el pdf: ' + error.message);
     }
   }
 

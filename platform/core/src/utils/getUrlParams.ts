@@ -10,7 +10,7 @@ function decodeFlags(str: string): boolean[] {
   return Array.from({ length: 5 }, (_, i) => Boolean(mask & (1 << i)));
 }
 
-function encodeFlags(flags: boolean[]): string {
+export function encodeFlags(flags: boolean[]): string {
   const mask = flags.reduce((m, f, i) => m | ((f ? 1 : 0) << i), 0);
   const obf = mask ^ KEY;
   return obf.toString(36);

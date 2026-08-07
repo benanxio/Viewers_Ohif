@@ -185,6 +185,7 @@ import XpectriaLogo from './Sources/XpectriaLogo';
 import PrinterIcon from './Sources/PrinterIcon';
 import ReportIcon from './Sources/ReportIcon';
 import ShareIcon from './Sources/ShareIcon';
+import HistoryIcon from './Sources/HistoryIcon';
 import CustomViewportWindowLevel from './Sources/CustomViewportWindowLevel';
 import ClipBoardIcon from './Sources/ClipBoardIcon';
 //
@@ -547,6 +548,7 @@ export const Icons = {
   PrinterIcon,
   ReportIcon,
   ShareIcon,
+  HistoryIcon,
   CustomViewportWindowLevel,
   ClipBoardIcon,
   SerieLoaded: (props: IconProps) => (

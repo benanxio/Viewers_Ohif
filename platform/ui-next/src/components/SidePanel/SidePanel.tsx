@@ -310,6 +310,10 @@ const SidePanel = ({
         {isLeftMobilePanel ? null : getCloseIcon()}
         <div
           className={classnames('flex grow', side === 'right' ? 'justify-start' : 'justify-end')}
+          style={{
+            paddingLeft: side === 'right' ? `${closeIconWidth}px` : undefined,
+            paddingRight: side === 'left' ? `${closeIconWidth}px` : undefined,
+          }}
         >
           <div className={classnames('bg-primary-main text-primary-active flex flex-wrap')}>
             {tabs.map((tab, tabIndex) => {
