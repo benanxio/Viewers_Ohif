@@ -18,6 +18,13 @@ export interface HistorialItem {
   has_report: boolean;
 }
 
+export interface HistorialResponse {
+  // Feature flag por sede (Sede.historial_habilitado en el backend): si es
+  // false, el historial está apagado para esa sede y items siempre viene [].
+  enabled: boolean;
+  items: HistorialItem[];
+}
+
 class AsyncEndpoints {
   public memoizedParams: GetUrlParamsReturn | null = null;
   public permissions: GetUrlParamsReturn['permissions'] = {
@@ -146,7 +153,7 @@ class AsyncEndpoints {
     }
   }
 
-  async getHistorial(): Promise<HistorialItem[]> {
+  async getHistorial(): Promise<HistorialResponse> {
     const params = this.getUrlParams();
 
     try {

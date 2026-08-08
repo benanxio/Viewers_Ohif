@@ -6,6 +6,10 @@ import { useCustomContext } from '@state';
 
 const { getUrlParams, encodeFlags } = utils;
 
+// Rollout gate while the feature is tested. Keep in sync with the copy of
+// this list in extensions/default/src/Components/SidePanelWithServices.tsx.
+const HISTORY_ALLOWED_SEDES = ['Sede-Demo', 'Sede-Chanchamayo'];
+
 interface HistorialItem {
   study_iuid: string;
   client: string;
@@ -25,14 +29,16 @@ interface HistorialItem {
 function PanelHistory({ servicesManager }: withAppTypes) {
   const { xpectriaService, uiDialogService } = servicesManager.services;
   const { isMobile } = useCustomContext();
-  const { permissions } = getUrlParams();
+  const { permissions, sede } = getUrlParams();
   // Same criterion as the tab-visibility filter in SidePanelWithServices:
   // view_report alone (e.g. a "Compartir estudio" link) must not expose the
-  // patient's full study/report history across sedes.
-  const canView = permissions.view_measurements;
+  // patient's full study/report history across sedes, and only the sedes in
+  // the rollout allowlist see the feature at all.
+  const canView = Boolean(permissions.view_measurements) && HISTORY_ALLOWED_SEDES.includes(sede);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [enabled, setEnabled] = useState(true);
   const [items, setItems] = useState<HistorialItem[]>([]);
 
   useEffect(() => {
@@ -46,8 +52,9 @@ function PanelHistory({ servicesManager }: withAppTypes) {
     setError(null);
 
     xpectriaService.XpectriaApi.getHistorial()
-      .then((data: HistorialItem[]) => {
+      .then(({ enabled: isEnabled, items: data }) => {
         if (!cancelled) {
+          setEnabled(isEnabled);
           setItems(data || []);
         }
       })
@@ -133,12 +140,17 @@ function PanelHistory({ servicesManager }: withAppTypes) {
         <div className="p-4 text-center text-sm text-gray-400">Buscando estudios previos...</div>
       )}
       {!loading && error && <div className="p-4 text-center text-sm text-red-400">{error}</div>}
-      {!loading && !error && items.length === 0 && (
+      {!loading && !error && !enabled && (
+        <div className="p-4 text-center text-sm text-gray-400">
+          El historial de estudios previos no está habilitado para esta sede.
+        </div>
+      )}
+      {!loading && !error && enabled && items.length === 0 && (
         <div className="p-4 text-center text-sm text-gray-400">
           No hay estudios previos para este paciente.
         </div>
       )}
-      {!loading && !error && items.length > 0 && (
+      {!loading && !error && enabled && items.length > 0 && (
         <ul className="space-y-2">
           {items.map(item => (
             <li
