@@ -11,6 +11,7 @@ import {
   Enums,
   utilities as cstUtils,
   ReferenceLinesTool,
+  cancelActiveManipulations,
 } from '@cornerstonejs/tools';
 
 import { Types as OhifTypes, utils } from '@ohif/core';
@@ -194,6 +195,15 @@ function commandsModule({
     /** Delete the given measurement */
     deleteMeasurement: ({ uid }) => {
       if (uid) {
+        const enabledElement = _getActiveViewportEnabledElement();
+        const element = enabledElement?.viewport?.element;
+        // If the deleted measurement is an annotation that a tool was still
+        // drawing (e.g. a partial Cobb angle removed via the context menu),
+        // the tool is left with a hidden cursor and dangling draw listeners.
+        // Cancel any in-progress manipulation so cursor and state are reset.
+        if (element) {
+          cancelActiveManipulations(element);
+        }
         measurementServiceSource.remove(uid);
       }
     },
