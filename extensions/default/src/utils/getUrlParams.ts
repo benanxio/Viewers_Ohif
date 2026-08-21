@@ -65,6 +65,11 @@ const OLD_PERMISSIONS: V1Permissions = {
   },
 };
 
+const CLIENTS_ALIAS: Record<string, string> = {
+  'Hospital-Prueba': 'Hospital Maria Auxiliadora',
+  'Policlinico-Izaguirre': 'Clinica Izaguirre',
+};
+
 const getUrlParams = (saveValue = false): GetUrlParamsReturn => {
   const { query } = qs.parseUrl(window.location.href);
 
@@ -72,7 +77,7 @@ const getUrlParams = (saveValue = false): GetUrlParamsReturn => {
   const client = (query.cl as string) || '';
   const sede = (query.sd as string) || '';
   const date = (query.dt as string) || '';
-  const clientAlias = client === "Hospital-Prueba" ? "Hospital Maria Auxiliadora" : client
+  const clientAlias = CLIENTS_ALIAS[client] || client;
 
   if (!unparsedId || unparsedId.length < 2) {
     throw new Error('El parámetro "id" es inválido o está ausente.');
