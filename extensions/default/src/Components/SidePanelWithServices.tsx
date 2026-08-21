@@ -26,17 +26,12 @@ const WIDE_PANEL_WIDTH = 680;
 // shared study - hide the tab entirely rather than just blocking its
 // content, since its mere presence would hint at more studies existing.
 const HISTORY_PANEL_ID = '@ohif/extension-measurement-tracking.panelModule.history';
-// Same rollout: the report editor tab (WIDE_PANEL_IDS[0] is this same id).
+// The report editor tab (WIDE_PANEL_IDS[0] is this same id).
 const REPORT_PANEL_ID = WIDE_PANEL_IDS[0];
 
-// Rollout gate while both features are tested: only these sedes (the "sd"
-// url param) see either tab. Keep in sync with PanelHistory.tsx's own copy
-// of this list.
-const ROLLOUT_ALLOWED_SEDES = ['Sede-Demo', 'Sede-Chanchamayo'];
-
-const isRolloutSede = (): boolean => {
+const hasPermission = (perm: 'view_measurements' | 'edit_report'): boolean => {
   try {
-    return ROLLOUT_ALLOWED_SEDES.includes(getUrlParams().sede);
+    return Boolean(getUrlParams().permissions?.[perm]);
   } catch {
     // Fail open: don't break panel rendering for contexts without the
     // Xpectria "id" url param (e.g. modes/dev setups outside that flow).
@@ -44,22 +39,13 @@ const isRolloutSede = (): boolean => {
   }
 };
 
-const canViewPatientHistory = (): boolean => {
-  try {
-    return Boolean(getUrlParams().permissions?.view_measurements) && isRolloutSede();
-  } catch {
-    return true;
-  }
-};
-
 const filterPanelsByPermission = tabs => {
-  const rolloutOk = isRolloutSede();
   return tabs.filter(tab => {
     if (tab.id === HISTORY_PANEL_ID) {
-      return canViewPatientHistory();
+      return hasPermission('view_measurements');
     }
     if (tab.id === REPORT_PANEL_ID) {
-      return rolloutOk;
+      return hasPermission('edit_report');
     }
     return true;
   });

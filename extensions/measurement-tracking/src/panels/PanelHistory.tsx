@@ -6,10 +6,6 @@ import { useCustomContext } from '@state';
 
 const { getUrlParams, encodeFlags } = utils;
 
-// Rollout gate while the feature is tested. Keep in sync with the copy of
-// this list in extensions/default/src/Components/SidePanelWithServices.tsx.
-const HISTORY_ALLOWED_SEDES = ['Sede-Demo', 'Sede-Chanchamayo'];
-
 interface HistorialItem {
   study_iuid: string;
   client: string;
@@ -29,12 +25,11 @@ interface HistorialItem {
 function PanelHistory({ servicesManager }: withAppTypes) {
   const { xpectriaService, uiDialogService } = servicesManager.services;
   const { isMobile } = useCustomContext();
-  const { permissions, sede } = getUrlParams();
+  const { permissions } = getUrlParams();
   // Same criterion as the tab-visibility filter in SidePanelWithServices:
   // view_report alone (e.g. a "Compartir estudio" link) must not expose the
-  // patient's full study/report history across sedes, and only the sedes in
-  // the rollout allowlist see the feature at all.
-  const canView = Boolean(permissions.view_measurements) && HISTORY_ALLOWED_SEDES.includes(sede);
+  // patient's full study/report history across sedes.
+  const canView = Boolean(permissions.view_measurements);
 
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
