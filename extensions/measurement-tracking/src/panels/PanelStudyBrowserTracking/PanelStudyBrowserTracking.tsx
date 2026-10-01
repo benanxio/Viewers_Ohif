@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import PropTypes from 'prop-types';
@@ -77,6 +77,8 @@ export default function PanelStudyBrowserTracking({
   const [thumbnailImageSrcMap, setThumbnailImageSrcMap] = useState({});
   const [jumpToDisplaySet, setJumpToDisplaySet] = useState(null);
   const [docVerify, setDocVerify] = useState(false);
+  const [canDeleteSeries, setCanDeleteSeries] = useState(false);
+  const isDeletingRef = useRef(false);
   const showPdfReport = useMemo(() => {
     if (view_report) {
       return view_report;
@@ -242,6 +244,18 @@ export default function PanelStudyBrowserTracking({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [StudyInstanceUIDs, getStudiesForPatientByMRN]);
 
+  useEffect(() => {
+    let isMounted = true;
+    xpectriaService.XpectriaApi.canDeleteSeries().then(allowed => {
+      if (isMounted) {
+        setCanDeleteSeries(allowed);
+      }
+    });
+    return () => {
+      isMounted = false;
+    };
+  }, [xpectriaService]);
+
   // ~~ Initial Thumbnails
   useEffect(() => {
     if (!hasLoadedViewports) {
@@ -304,7 +318,8 @@ export default function PanelStudyBrowserTracking({
       dataSource,
       displaySetService,
       uiDialogService,
-      uiNotificationService
+      uiNotificationService,
+      canDeleteSeries ? onDeleteThumbnail : null
     );
 
     setDisplaySets(displaySets => {
@@ -325,6 +340,7 @@ export default function PanelStudyBrowserTracking({
     viewports,
     dataSource,
     thumbnailImageSrcMap,
+    canDeleteSeries,
   ]);
 
   // -- displaySetsLoadingState
@@ -406,7 +422,8 @@ export default function PanelStudyBrowserTracking({
           dataSource,
           displaySetService,
           uiDialogService,
-          uiNotificationService
+          uiNotificationService,
+          canDeleteSeries ? onDeleteThumbnail : null
         );
 
         setDisplaySets(displaySets => {
@@ -435,7 +452,8 @@ export default function PanelStudyBrowserTracking({
           dataSource,
           displaySetService,
           uiDialogService,
-          uiNotificationService
+          uiNotificationService,
+          canDeleteSeries ? onDeleteThumbnail : null
         );
 
         setDisplaySets(displaySets => {
@@ -456,6 +474,7 @@ export default function PanelStudyBrowserTracking({
     viewports,
     dataSource,
     displaySetService,
+    canDeleteSeries,
   ]);
 
   const tabs = createStudyBrowserTabs(StudyInstanceUIDs, studyDisplayList, displaySets);
@@ -486,6 +505,8 @@ export default function PanelStudyBrowserTracking({
               isTracked: false,
               description: 'Informe',
               componentType: 'thumbnailNoImage',
+              canDelete: false,
+              onDelete: undefined,
             };
 
             setDisplaySets(prevSets => [newDocSet, ...prevSets]);
@@ -610,6 +631,209 @@ export default function PanelStudyBrowserTracking({
     });
   };
 
+  /**
+   * Reemplaza el displaySet en los viewports que lo muestran y luego lo quita del
+   * displaySetService. Se reemplaza ANTES de borrarlo para que ningún viewport
+   * quede apuntando a un displaySet inexistente.
+   */
+  const removeDisplaySetFromViewer = async (displaySetInstanceUID, StudyInstanceUID) => {
+    const { viewports: gridViewports, isHangingProtocolLayout: isHPLayout } =
+      viewportGridService.getState();
+    const affectedViewportIds = [...gridViewports.values()]
+      .filter(vp => vp.displaySetInstanceUIDs?.includes(displaySetInstanceUID))
+      .map(vp => vp.viewportId);
+
+    if (!affectedViewportIds.length) {
+      displaySetService.deleteDisplaySet(displaySetInstanceUID);
+      return;
+    }
+
+    // Preferir: mismo estudio, que no esté ya visible, y con más imágenes
+    const visibleUIDs = new Set(
+      [...gridViewports.values()].flatMap(vp => vp.displaySetInstanceUIDs || [])
+    );
+    const candidates = _getImageDisplaySets(displaySetService.getActiveDisplaySets())
+      .filter(ds => ds.displaySetInstanceUID !== displaySetInstanceUID)
+      .sort(
+        (a, b) =>
+          Number(b.StudyInstanceUID === StudyInstanceUID) -
+            Number(a.StudyInstanceUID === StudyInstanceUID) ||
+          Number(visibleUIDs.has(a.displaySetInstanceUID)) -
+            Number(visibleUIDs.has(b.displaySetInstanceUID)) ||
+          (b.numImageFrames || 0) - (a.numImageFrames || 0)
+      );
+
+    // Igual que el doble click en una miniatura: el hanging protocol valida que el
+    // reemplazo encaje (ej. en MPR solo sirve una serie reconstruible) y actualiza
+    // también los viewports enlazados.
+    const updates = new Map();
+    for (const viewportId of affectedViewportIds) {
+      if (updates.has(viewportId)) {
+        continue;
+      }
+      candidates.some(candidate => {
+        try {
+          hangingProtocolService
+            .getViewportsRequireUpdate(viewportId, candidate.displaySetInstanceUID, isHPLayout)
+            .forEach(update => updates.set(update.viewportId, update));
+          return true;
+        } catch (error) {
+          return false;
+        }
+      });
+    }
+
+    if (affectedViewportIds.every(viewportId => updates.has(viewportId))) {
+      await viewportGridService.setDisplaySetsForViewports([...updates.values()]);
+      displaySetService.deleteDisplaySet(displaySetInstanceUID);
+      return;
+    }
+
+    // Ninguna serie restante encaja en el layout actual (ej. se borró el único
+    // volumen en MPR): se vuelve a armar el layout con las series que quedan.
+    displaySetService.deleteDisplaySet(displaySetInstanceUID);
+    const { protocolId } = hangingProtocolService.getState();
+    const reapplied =
+      protocolId &&
+      protocolId !== 'mpr' &&
+      commandsManager.runCommand('setHangingProtocol', { protocolId, reset: true });
+    if (!reapplied) {
+      commandsManager.runCommand('setHangingProtocol', { protocolId: 'default', reset: true });
+    }
+  };
+
+  const onDeleteDisplaySet = displaySetInstanceUID => {
+    const displaySet = displaySetService.getDisplaySetByUID(displaySetInstanceUID);
+    if (!displaySet || isDeletingRef.current) {
+      return;
+    }
+
+    const { SeriesInstanceUID, StudyInstanceUID, SeriesDescription, SeriesNumber } = displaySet;
+    const showError = message =>
+      uiNotificationService.show({ title: 'Eliminar serie', message, type: 'error' });
+
+    if (_getImageDisplaySets(displaySetService.getActiveDisplaySets()).length <= 1) {
+      showError('No se puede eliminar la única serie del estudio.');
+      return;
+    }
+
+    const sopInstanceUIDs = [
+      ...new Set(
+        (displaySet.images || displaySet.instances || [])
+          .map(instance => instance.SOPInstanceUID)
+          .filter(Boolean)
+      ),
+    ];
+    if (!sopInstanceUIDs.length) {
+      showError('No se encontraron las imágenes de esta serie.');
+      return;
+    }
+
+    const sopSet = new Set(sopInstanceUIDs);
+    const measurementsToRemove = measurementService
+      .getMeasurements()
+      .filter(
+        m =>
+          m.displaySetInstanceUID === displaySetInstanceUID ||
+          (m.referenceSeriesUID === SeriesInstanceUID && sopSet.has(m.SOPInstanceUID))
+      );
+    // Una serie puede verse como varias miniaturas: solo se borra esta parte
+    const keepsRestOfSeries = displaySetService
+      .getActiveDisplaySets()
+      .some(
+        ds =>
+          ds.displaySetInstanceUID !== displaySetInstanceUID &&
+          ds.SeriesInstanceUID === SeriesInstanceUID
+      );
+
+    const onConfirm = async () => {
+      isDeletingRef.current = true;
+      try {
+        await xpectriaService.XpectriaApi.deleteInstances({
+          SeriesInstanceUID,
+          SOPInstanceUIDs: sopInstanceUIDs,
+        });
+      } catch (error) {
+        showError(error.message);
+        return;
+      } finally {
+        isDeletingRef.current = false;
+      }
+
+      // Primero las medidas: el panel de medidas busca su displaySet
+      measurementsToRemove.forEach(m => measurementService.remove(m.uid));
+      try {
+        await removeDisplaySetFromViewer(displaySetInstanceUID, StudyInstanceUID);
+      } catch (error) {
+        console.error(error);
+      }
+      if (!keepsRestOfSeries && trackedSeries.includes(SeriesInstanceUID)) {
+        sendTrackedMeasurementsEvent('UNTRACK_SERIES', { SeriesInstanceUID });
+      }
+
+      uiNotificationService.show({
+        title: 'Eliminar serie',
+        message: 'Serie eliminada correctamente',
+        type: 'success',
+      });
+    };
+
+    const dialogId = 'delete-display-set';
+    uiDialogService.create({
+      id: dialogId,
+      centralize: true,
+      isDraggable: false,
+      showOverlay: true,
+      content: Dialog,
+      contentProps: {
+        title: 'Eliminar serie',
+        body: () => (
+          <div className="bg-primary-dark p-4 text-white">
+            <p>
+              ¿Eliminar <b>{SeriesDescription || 'Sin descripción'}</b> (S: {SeriesNumber},{' '}
+              {sopInstanceUIDs.length} {sopInstanceUIDs.length === 1 ? 'imagen' : 'imágenes'})?
+            </p>
+            {keepsRestOfSeries && (
+              <p className="mt-2">Solo se elimina esta parte; el resto de la serie se conserva.</p>
+            )}
+            {measurementsToRemove.length > 0 && (
+              <p className="mt-2">
+                También se eliminarán {measurementsToRemove.length}{' '}
+                {measurementsToRemove.length === 1 ? 'medida asociada' : 'medidas asociadas'}.
+              </p>
+            )}
+            <p className="mt-2">Se elimina del estudio para todos los usuarios.</p>
+          </div>
+        ),
+        actions: [
+          { id: 'cancel', text: 'Cancelar', type: ButtonEnums.type.secondary },
+          {
+            id: 'yes',
+            text: 'Eliminar',
+            type: ButtonEnums.type.primary,
+            classes: ['delete-display-set-yes-button'],
+          },
+        ],
+        onClose: () => uiDialogService.dismiss({ id: dialogId }),
+        onSubmit: async ({ action }) => {
+          uiDialogService.dismiss({ id: dialogId });
+          if (action.id === 'yes') {
+            await onConfirm();
+          }
+        },
+      },
+    });
+  };
+
+  // Los thumbnails se arman dentro de efectos/subscripciones con closures viejos:
+  // pasando por el ref siempre corre el handler del último render.
+  const onDeleteDisplaySetRef = useRef(onDeleteDisplaySet);
+  onDeleteDisplaySetRef.current = onDeleteDisplaySet;
+  const onDeleteThumbnail = useMemo(
+    () => displaySetInstanceUID => onDeleteDisplaySetRef.current(displaySetInstanceUID),
+    []
+  );
+
   const onThumbnailContextMenu = (commandName, options) => {
     commandsManager.runCommand(commandName, options);
   };
@@ -709,7 +933,8 @@ function _mapDisplaySets(
   dataSource,
   displaySetService,
   uiDialogService,
-  uiNotificationService
+  uiNotificationService,
+  onDeleteDisplaySet = null
 ) {
   const thumbnailDisplaySets = [];
   const thumbnailNoImageDisplaySets = [];
@@ -747,6 +972,11 @@ function _mapDisplaySets(
         isTracked: trackedSeriesInstanceUIDs.includes(ds.SeriesInstanceUID),
         isHydratedForDerivedDisplaySet: ds.isHydrated,
       };
+
+      if (componentType === 'thumbnailTracked' && onDeleteDisplaySet) {
+        thumbnailProps.canDelete = true;
+        thumbnailProps.onDelete = () => onDeleteDisplaySet(displaySetInstanceUID);
+      }
 
       if (componentType === 'thumbnailNoImage') {
         if (dataSource.reject && dataSource.reject.series) {
@@ -823,6 +1053,15 @@ function _mapDisplaySets(
     });
 
   return [...thumbnailDisplaySets, ...thumbnailNoImageDisplaySets];
+}
+
+function _getImageDisplaySets(displaySets) {
+  return displaySets.filter(
+    ds =>
+      !ds.unsupported &&
+      !ds.excludeFromThumbnailBrowser &&
+      !thumbnailNoImageModalities.includes(ds.Modality)
+  );
 }
 
 function _getComponentType(ds) {

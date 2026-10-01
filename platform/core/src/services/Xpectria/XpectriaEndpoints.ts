@@ -207,6 +207,43 @@ class AsyncEndpoints {
     }
   }
 
+  // El viewer no tiene sesión propia: estas llamadas pasan por una ruta API del
+  // RIS (mismo sitio, así que el navegador manda la cookie de NextAuth), que
+  // reenvía al backend con el JWT del usuario logueado.
+  private canDeleteSeriesPromise: Promise<boolean> | null = null;
+
+  canDeleteSeries(): Promise<boolean> {
+    if (!this.canDeleteSeriesPromise) {
+      const { id } = this.getUrlParams();
+      this.canDeleteSeriesPromise = fetch(
+        `${process.env.FRONT_URL}/api/viewer/series/?uid=${encodeURIComponent(id)}`,
+        { credentials: 'include' }
+      )
+        .then(response => (response.ok ? response.json() : null))
+        .then(data => data?.can_delete_series === true)
+        .catch(() => false);
+    }
+    return this.canDeleteSeriesPromise;
+  }
+
+  async deleteInstances(params: {
+    SeriesInstanceUID: string;
+    SOPInstanceUIDs: string[];
+  }): Promise<void> {
+    const { id } = this.getUrlParams();
+    const response = await fetch(`${process.env.FRONT_URL}/api/viewer/series/`, {
+      method: 'POST',
+      credentials: 'include',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ Uid: id, ...params }),
+    });
+
+    if (!response.ok) {
+      const data = await response.json().catch(() => null);
+      throw new Error(data?.error || `Error al eliminar (HTTP ${response.status})`);
+    }
+  }
+
   async getMeasurements() {
     if (!this.memoizedParams?.permissions.view_measurements) {
       throw new Error('Error: permisos insuficientes');

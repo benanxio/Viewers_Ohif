@@ -52,6 +52,8 @@ const ThumbnailList = ({
             isTracked,
             canReject,
             onReject,
+            canDelete,
+            onDelete,
             imageSrc,
             messages,
             imageAltText,
@@ -82,6 +84,8 @@ const ThumbnailList = ({
                 isHydratedForDerivedDisplaySet={isHydratedForDerivedDisplaySet}
                 canReject={canReject}
                 onReject={onReject}
+                canDelete={canDelete}
+                onDelete={onDelete}
                 onThumbnailContextMenu={onThumbnailContextMenu}
                 isMobile={isMobile}
               />

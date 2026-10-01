@@ -36,6 +36,8 @@ const Thumbnail = ({
   isHydratedForDerivedDisplaySet = false,
   canReject = false,
   onReject = () => {},
+  canDelete = false,
+  onDelete = () => {},
   isTracked = false,
   thumbnailType = 'thumbnail',
   onClickUntrack = () => {},
@@ -132,6 +134,27 @@ const Thumbnail = ({
               ></div>
               <div className="text-[11px] font-semibold text-white">{modality}</div>
             </div>
+            {canDelete && (
+              <button
+                type="button"
+                title="Eliminar serie"
+                aria-label="Eliminar serie"
+                className={classnames(
+                  'absolute top-1 right-1 z-10 rounded bg-black/70 p-[3px] text-red-500 hover:bg-black hover:text-red-400',
+                  isMobile ? 'inline-flex' : 'hidden group-hover:inline-flex'
+                )}
+                // Sin esto el click/tap también "abre" la serie en el viewport
+                onClick={e => {
+                  e.stopPropagation();
+                  onDelete();
+                }}
+                onDoubleClick={e => e.stopPropagation()}
+                onTouchStart={e => e.stopPropagation()}
+                onTouchEnd={e => e.stopPropagation()}
+              >
+                <Icons.Trash className="h-4 w-4" />
+              </button>
+            )}
             {/* top right */}
             <div className="absolute top-0 right-0 hidden items-center gap-[4px]">
               <DisplaySetMessageListTooltip
@@ -444,6 +467,8 @@ Thumbnail.propTypes = {
   isHydratedForDerivedDisplaySet: PropTypes.bool,
   canReject: PropTypes.bool,
   onReject: PropTypes.func,
+  canDelete: PropTypes.bool,
+  onDelete: PropTypes.func,
   isTracked: PropTypes.bool,
   onClickUntrack: PropTypes.func,
   countIcon: PropTypes.string,
