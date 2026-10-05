@@ -46,8 +46,14 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element, servicesMan
   // El viewport ya está mostrando su imagen actual
   const hasCurrentImage = () => {
     const viewport = getEnabledElement(element)?.viewport;
+    const currentImageId = viewport?.getCurrentImageId?.();
+    // Los viewports de volumen (MPR) no tienen getCornerstoneImage: el corte cuenta
+    // como cargado si su imagen ya está en la caché
+    if (viewport && viewport.type !== Enums.ViewportType.STACK) {
+      return Boolean(currentImageId && cache.getImage(currentImageId));
+    }
     const image = viewport?.getCornerstoneImage?.();
-    return Boolean(image && image.imageId === viewport.getCurrentImageId?.());
+    return Boolean(image && image.imageId === currentImageId);
   };
 
   // IMAGE_LOAD_ERROR lo emite cornerstone en el eventTarget global, no en el elemento.
@@ -165,9 +171,17 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element, servicesMan
       // no estaba en caché
     }
     try {
-      viewport.setStack(viewport.getImageIds(), viewport.getCurrentImageIdIndex());
+      if (viewport.type === Enums.ViewportType.STACK) {
+        viewport.setStack(viewport.getImageIds(), viewport.getCurrentImageIdIndex());
+      } else {
+        // MPR: no hay setStack. Se vuelve a pedir lo que falta del volumen
+        // (load() solo descarga los cortes que no están en caché) y se redibuja
+        cache.getVolume(viewport.getVolumeId())?.load?.();
+        viewport.render();
+      }
     } catch (e) {
-      window.location.reload();
+      // nunca recargar la página: se perdería el estudio y el layout MPR
+      console.warn('No se pudo reintentar la carga de la imagen', e);
     }
   };
 
@@ -286,7 +300,7 @@ function ViewportImageSliceLoadingIndicator({ viewportData, element, servicesMan
   }
 
   if (prefetchProgress && prefetchProgress.loaded < prefetchProgress.total) {
-    const percent = Math.round((prefetchProgress.loaded / prefetchProgress.total) * 100);
+    const percent = Math.floor((prefetchProgress.loaded / prefetchProgress.total) * 100);
 
     return (
       <div className="pointer-events-none absolute bottom-2 left-1/2 w-2/3 max-w-xs -translate-x-1/2">

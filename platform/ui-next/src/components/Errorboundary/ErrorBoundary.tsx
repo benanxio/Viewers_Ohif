@@ -42,7 +42,7 @@ const DefaultFallback = ({
 }: DefaultFallbackProps) => {
   const { t } = useTranslation('ErrorBoundary');
   const [showDetails, setShowDetails] = useState(false);
-  const title = `${t('Something went wrong')}${!isProduction && ` ${t('in')} ${context}`}.`;
+  const title = `${t('Something went wrong')}${!isProduction ? ` ${t('in')} ${context}` : ''}.`;
   const subtitle = t('Sorry, something went wrong there. Try again.');
 
   const copyErrorDetails = () => {
@@ -55,15 +55,10 @@ Stack: ${error.stack}
     toast.success(t('Copied to clipboard'));
   };
 
+  // Xpectria: sin toast de error (los errores globales y promesas rechazadas de
+  // cornerstone llegan aquí y no pasan por el filtro de NotificationProvider)
   useEffect(() => {
-    toast.error(title, {
-      description: subtitle,
-      action: {
-        label: t('Show Details'),
-        onClick: () => setShowDetails(true),
-      },
-      duration: 0,
-    });
+    console.error(`${title} [${context}]`, error);
   }, [error]);
 
   if (isProduction) {

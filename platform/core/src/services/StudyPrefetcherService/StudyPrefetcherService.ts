@@ -70,6 +70,10 @@ type ImageRequest = {
   /** Whether this image belongs to a currently active (displayed) display set,
    * as opposed to an adjacent display set being prefetched in the background. */
   isActive: boolean;
+  /** Whether the image load pool manager already ran the request */
+  started?: boolean;
+  /** additionalDetails object passed to the pool, used to find the request in its queue */
+  poolDetails?: Record<string, unknown>;
 };
 
 type PubSubServiceSubscription = { unsubscribe: () => any };
@@ -86,6 +90,7 @@ interface IImageLoadPoolManager {
     priority?: number
   );
   clearRequestStack(type: string): void;
+  getRequestPool(): Record<string, Record<number, Array<{ additionalDetails: unknown }>>>;
 }
 
 interface IImageLoader {
@@ -113,6 +118,7 @@ class StudyPrefetcherService extends PubSubService {
   private _isRunning = false;
   private _displaySetLoadingStates = new Map<string, DisplaySetLoadingState>();
   private _imageIdsToDisplaySetsMap = new Map<string, Set<string>>();
+  private _reclaimInterval: ReturnType<typeof setInterval> | null = null;
   private config: StudyPrefetcherConfig = {
     /* Enable/disable study prefetching service */
     enabled: false,
@@ -201,7 +207,10 @@ class StudyPrefetcherService extends PubSubService {
       //
       // PS: active display sets are not loaded by this service and that is why
       // the requests shall not be in the inflight queue.
-      if (!this._inflightRequests.get(imageId)) {
+      // Xpectria: also when it is inflight, it may be one that was dropped from
+      // the pool queue and loaded by someone else (see _reclaimDroppedRequests)
+      const inflightRequest = this._inflightRequests.get(imageId);
+      if (!inflightRequest || !inflightRequest.started) {
         this._sendNextRequests();
       }
     };
@@ -607,6 +616,9 @@ class StudyPrefetcherService extends PubSubService {
       return;
     }
 
+    this._reclaimDroppedRequests();
+    this._reconcileCachedImages();
+
     const { _pendingRequests: pendingRequests, _inflightRequests: inflightRequests } = this;
     const { maxNumPrefetchRequests } = this.config;
 
@@ -651,17 +663,95 @@ class StudyPrefetcherService extends PubSubService {
         },
       };
 
+      const poolDetails = { imageId };
+      imageRequest.started = false;
+      imageRequest.poolDetails = poolDetails;
+
       this.imageLoadPoolManager.addRequest(
-        async () =>
-          this.imageLoader.loadAndCacheImage(imageId, options).then(
+        async () => {
+          imageRequest.started = true;
+          return this.imageLoader.loadAndCacheImage(imageId, options).then(
             _image => this._onImagePrefetchSuccess(imageRequest),
             error => this._onImagePrefetchFailed(imageRequest, error)
-          ),
+          );
+        },
         this.requestType,
-        { imageId }
+        poolDetails
       );
 
       inflightRequests.set(imageId, imageRequest);
+    });
+  }
+
+  /**
+   * Xpectria: cornerstone's stackContextPrefetch removes every queued 'prefetch'
+   * request of the displayed stack from the imageLoadPoolManager each time the
+   * image changes (filterRequests). Our requests that were still queued never
+   * run, so their promise never settles and they held a maxNumPrefetchRequests
+   * slot forever. With multiframe (tomosynthesis: every frame waits for the same
+   * file download) all the slots ended up taken and the progress got stuck
+   * (eg: 74/105) until the user scrolled. Requests that are no longer queued go
+   * back to pending.
+   */
+  private _reclaimDroppedRequests(): void {
+    const notStarted = Array.from(this._inflightRequests.values()).filter(
+      imageRequest => !imageRequest.started
+    );
+
+    if (!notStarted.length) {
+      return;
+    }
+
+    const queuedDetails = new Set<unknown>();
+    const pool = this.imageLoadPoolManager.getRequestPool()[this.requestType] ?? {};
+    Object.values(pool).forEach(requests =>
+      requests.forEach(request => queuedDetails.add(request.additionalDetails))
+    );
+
+    notStarted.forEach(imageRequest => {
+      if (queuedDetails.has(imageRequest.poolDetails)) {
+        return;
+      }
+
+      const { imageId } = imageRequest;
+      this._inflightRequests.delete(imageId);
+
+      if (this.cache.isImageCached(imageId)) {
+        this._moveImageIdToLoadedSet(imageId);
+      } else {
+        this._pendingRequests.unshift(imageRequest);
+      }
+    });
+  }
+
+  /**
+   * Xpectria: images loaded by other means (eg: the MPR volume loader, or loaded
+   * before the listeners were attached) may never raise an event the service
+   * counts, leaving the progress stuck (eg: 940/941). Anything already in the
+   * cache is moved to the loaded set.
+   */
+  private _reconcileCachedImages(): void {
+    this._displaySetLoadingStates.forEach((state, displaySetInstanceUID) => {
+      if (state.loadedImageIds.size + state.failedImageIds.size >= state.numInstances) {
+        return;
+      }
+
+      let changed = false;
+      state.pendingImageIds.forEach(imageId => {
+        if (
+          !state.loadedImageIds.has(imageId) &&
+          !state.failedImageIds.has(imageId) &&
+          this.cache.isImageCached(imageId)
+        ) {
+          state.loadedImageIds.add(imageId);
+          changed = true;
+        }
+      });
+
+      if (changed) {
+        this._updateDisplaySetLoadingProgress(state);
+        this._triggerDisplaySetEvents(displaySetInstanceUID);
+      }
     });
   }
 
@@ -708,6 +798,9 @@ class StudyPrefetcherService extends PubSubService {
 
     this._loadDisplaySets();
     this._sendNextRequests();
+
+    // Safety net for _reclaimDroppedRequests when no image event arrives
+    this._reclaimInterval = setInterval(() => this._sendNextRequests(), 1000);
     this._broadcastEvent(this.EVENTS.SERVICE_STARTED, {});
   }
 
@@ -720,6 +813,9 @@ class StudyPrefetcherService extends PubSubService {
       return;
     }
     this._isRunning = false;
+
+    clearInterval(this._reclaimInterval);
+    this._reclaimInterval = null;
 
     // Mark all inflight requests as aborted before clearing the map.
     this._inflightRequests.forEach(inflightRequest => (inflightRequest.aborted = true));
