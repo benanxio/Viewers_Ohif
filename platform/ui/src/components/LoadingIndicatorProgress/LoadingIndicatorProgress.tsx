@@ -17,7 +17,11 @@ function LoadingIndicatorProgress({ className, textBlock, progress }) {
         className
       )}
     >
-      <Icons.XpectriaLogo className="h-12 w-12 text-white" />
+      {/* Mismo tamaño que la pantalla de inicio de index.html (#xp-splash) */}
+      <Icons.XpectriaLogo
+        className="text-white"
+        style={{ width: 'min(240px, 60vw)', height: 'auto' }}
+      />
       <div className="w-48">
         <ProgressLoadingBar progress={progress} />
       </div>

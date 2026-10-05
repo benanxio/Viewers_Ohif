@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useParams, useLocation, useNavigate } from 'react-router';
 import PropTypes from 'prop-types';
 import { utils } from '@ohif/core';
-import { DragAndDropProvider, ImageViewerProvider } from '@ohif/ui';
+import { DragAndDropProvider, ImageViewerProvider, LoadingIndicatorProgress } from '@ohif/ui';
 import { useSearchParams } from '@hooks';
 import { useAppConfig } from '@state';
 import ViewportGrid from '@components/ViewportGrid';
@@ -345,7 +345,15 @@ export default function ModeRoute({
   ]);
 
   if (!studyInstanceUIDs || !layoutTemplateData.current || !ExtensionDependenciesLoaded) {
-    return null;
+    // Mientras baja el JSON del estudio: pantalla de Xpectria en vez de negro
+    return (
+      <div className="fixed inset-0 z-50 bg-black">
+        <LoadingIndicatorProgress
+          className="h-full w-full bg-black"
+          textBlock="Cargando estudio…"
+        />
+      </div>
+    );
   }
 
   const ViewportGridWithDataSource = props => {
