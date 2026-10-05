@@ -21,6 +21,13 @@ const NotificationProvider = ({ children, service }) => {
       ...options,
     };
 
+    // Los toasts de error tapan la imagen del usuario: solo van a la consola.
+    // Los errores reales de carga de imagen se muestran dentro del propio viewport.
+    if (type === 'error' && !promise) {
+      console.error('[Notificación de error oculta]', title, message);
+      return;
+    }
+
     if (promise) {
       return toast.promise(promise, {
         loading: title || 'Loading...',

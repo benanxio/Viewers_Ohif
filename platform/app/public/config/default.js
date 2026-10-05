@@ -29,7 +29,13 @@ window.config = {
   // the closest adjacent series in the background.
   studyPrefetcher: {
     enabled: true,
-    displaySetsCount: 1,
+    // En celular no se precarga la serie vecina (solo la que se está viendo):
+    // en tomosíntesis serían ~400 MB que el usuario no pidió
+    displaySetsCount:
+      /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(navigator.userAgent) ||
+      window.innerWidth <= 768
+        ? 0
+        : 1,
     maxNumPrefetchRequests: 10,
     order: 'closest',
   },
