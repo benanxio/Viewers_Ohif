@@ -27,7 +27,10 @@ import {
 } from '../../types/Presentation';
 
 import JumpPresets from '../../utils/JumpPresets';
-import { applyMammographyFit } from '../../utils/getMammographyDisplayArea';
+import {
+  applyMammographyFit,
+  isMammographyFitIntact,
+} from '../../utils/getMammographyDisplayArea';
 import { ViewportProperties } from '@cornerstonejs/core/types';
 import { useLutPresentationStore } from '../../stores/useLutPresentationStore';
 import { usePositionPresentationStore } from '../../stores/usePositionPresentationStore';
@@ -1094,6 +1097,13 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
     try {
       const viewports = this.getRenderingEngine().getViewports();
 
+      // Mamografías con el ajuste automático intacto: el ajuste depende del ancho
+      // del viewport, así que tras el resize se recalcula en vez de restaurar la
+      // posición relativa (que la deja corrida al abrir/cerrar paneles)
+      const mammographyFitViewports = viewports.filter(viewport =>
+        isMammographyFitIntact(viewport)
+      );
+
       // Store the current position presentations for each viewport.
       viewports.forEach(({ id: viewportId }) => {
         const presentation = this._getPositionPresentation(viewportId);
@@ -1120,6 +1130,17 @@ class CornerstoneViewportService extends PubSubService implements IViewportServi
 
       // Resize and render the rendering engine again.
       renderingEngine.resize(isImmediate);
+
+      mammographyFitViewports.forEach(viewport => {
+        const displaySetUID = this.viewportsDisplaySets.get(viewport.id)?.[0];
+        applyMammographyFit(
+          viewport,
+          displaySetUID
+            ? this.servicesManager.services.displaySetService.getDisplaySetByUID(displaySetUID)
+            : undefined
+        );
+      });
+
       renderingEngine.render();
     } catch (e) {
       // This can happen if the resize is too close to navigation or shutdown
