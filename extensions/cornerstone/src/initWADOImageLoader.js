@@ -1,4 +1,4 @@
-import { volumeLoader } from '@cornerstonejs/core';
+import { volumeLoader, eventTarget, triggerEvent } from '@cornerstonejs/core';
 import {
   cornerstoneStreamingImageVolumeLoader,
   cornerstoneStreamingDynamicImageVolumeLoader,
@@ -7,6 +7,9 @@ import dicomImageLoader from '@cornerstonejs/dicom-image-loader';
 import { errorHandler, utils } from '@ohif/core';
 
 const { registerVolumeLoader } = volumeLoader;
+
+// Progreso de descarga de cada DICOM (bytes), para el indicador de carga del viewport
+export const IMAGE_DOWNLOAD_PROGRESS = 'XPECTRIA_IMAGE_DOWNLOAD_PROGRESS';
 
 export default function initWADOImageLoader(
   userAuthenticationService,
@@ -47,6 +50,13 @@ export default function initWADOImageLoader(
     },
     errorInterceptor: error => {
       errorHandler.getHTTPErrorHandler(error);
+    },
+    onprogress: (progress, params) => {
+      triggerEvent(eventTarget, IMAGE_DOWNLOAD_PROGRESS, {
+        url: params.url,
+        loaded: progress.loaded,
+        total: progress.lengthComputable ? progress.total : 0,
+      });
     },
   });
 }
