@@ -87,8 +87,10 @@ export function CustomProviderContext({ children }) {
       const isUserAgentMobile = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(
         userAgent.toLowerCase()
       );
+      // iPadOS Safari se presenta como Mac; ninguna Mac tiene pantalla táctil
+      const isIPadOS = /macintosh/i.test(userAgent) && navigator.maxTouchPoints > 1;
       const isScreenSizeMobile = window.innerWidth <= 768;
-      setIsMobile(isUserAgentMobile || isScreenSizeMobile);
+      setIsMobile(isUserAgentMobile || isIPadOS || isScreenSizeMobile);
     };
 
     checkDevice();

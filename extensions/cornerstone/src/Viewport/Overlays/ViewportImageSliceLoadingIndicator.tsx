@@ -12,7 +12,13 @@ const formatMB = bytes => (bytes / (1024 * 1024)).toFixed(1);
 // no se muestra la vista previa de baja calidad dentro del viewport, solo el progreso.
 const isMobileDevice = () => {
   const ua = (navigator.userAgent || '').toLowerCase();
-  return /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua) || window.innerWidth <= 768;
+  // iPadOS Safari se presenta como Mac; ninguna Mac tiene pantalla táctil
+  const isIPadOS = /macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
+  return (
+    /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua) ||
+    isIPadOS ||
+    window.innerWidth <= 768
+  );
 };
 
 function ViewportImageSliceLoadingIndicator({ viewportData, element, servicesManager }) {

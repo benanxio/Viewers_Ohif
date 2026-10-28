@@ -17,8 +17,10 @@ function isMobileDevice(): boolean {
   }
   const ua = (navigator.userAgent || (navigator as any).vendor || '').toLowerCase();
   const isUserAgentMobile = /android|iphone|ipad|ipod|blackberry|iemobile|opera mini/i.test(ua);
+  // iPadOS Safari se presenta como Mac; ninguna Mac tiene pantalla táctil
+  const isIPadOS = /macintosh/i.test(ua) && navigator.maxTouchPoints > 1;
   const isScreenSizeMobile = window.innerWidth <= 768;
-  return isUserAgentMobile || isScreenSizeMobile;
+  return isUserAgentMobile || isIPadOS || isScreenSizeMobile;
 }
 
 /**
